@@ -1,0 +1,13 @@
+[Project]
+FileName=C:\Documents and Settings\mike\My Documents\Visual Studio 2005\Projects\csExWB\COM_Component_Source_Binaries\csExWBDLMan.dev
+Name=csExWBDLMan
+Ver=1
+IsCpp=1
+Type=0
+Compiler=-D__GNUWIN32__ -W -DWIN32 -DNDEBUG -D_WINDOWS -D_MBCS -D_USRDLL -D_ATL_STATIC_REGISTRY -D_ATL_MIN_CRT 
+CppCompiler=-D__GNUWIN32__ -W -DWIN32 -DNDEBUG -D_WINDOWS -D_MBCS -D_USRDLL -D_ATL_STATIC_REGISTRY -D_ATL_MIN_CRT 
+Includes=
+Linker=-lkernel32 -luser32 -lgdi32 -lwinspool -lcomdlg32 -ladvapi32 -lshell32 -lole32 -loleaut32 -luuid -lodbc32 -lodbccp32 -lwininet -lUrlmon 
+Libs=
+UnitCount=0
+Folders="Source Files","Header Files","Resource Files"

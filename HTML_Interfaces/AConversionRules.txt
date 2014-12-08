@@ -1,0 +1,25 @@
+
+//////////////////////////
+A bit of conversion rule:
+//////////////////////////
+
+Refer to:
+http://msdn2.microsoft.com/en-us/library/sak564ww.aspx
+http://msdn2.microsoft.com/en-us/library/zah6xy75(VS.80).aspx
+http://msdn.microsoft.com/msdnmag/issues/01/05/com/
+http://www.codeproject.com/csharp/EssentialPInvoke.asp
+
+BSTR -> string
+long or LONG -> int
+[optional][in] or [in] VARIANT -> object
+[optional][in] or [in] VARIANT* -> [In] ref object
+Interface (IHTMLElement*) -> either itself (if defined) or object with MarshalAs(UnmanagedType.interface)
+VARIANT_BOOL -> bool with MarshalAs(UnmanagedType.Variantbool)
+IUnknown* -> object with MarshalAs(UnmanagedType.IUnknown)
+IDispatch* -> object with MarshalAs(UnmanagedType.IDispatch)
+SAFEARRAY(VARIANT) -> object with [MarshalAs(UnmanagedType.SafeArray, SafeArraySubType = VarEnum.VT_VARIANT)]
+[optional][in][out] VARIANT* -> [In, Out] ref object
+float -> Single
+double -> Double
+currency -> Decimal
+Date -> DateTime

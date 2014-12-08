@@ -1,0 +1,2482 @@
+Index: COM_Component_Src/ATLCPImplMT.h
+===================================================================
+--- COM_Component_Src/ATLCPImplMT.h	(revision 71)
++++ COM_Component_Src/ATLCPImplMT.h	(working copy)
+@@ -154,7 +154,7 @@
+ STDMETHODIMP IConnectionPointImplMT<T, piid, CDV>::Unadvise(DWORD dwCookie)
+ {
+ 	m_CPMTCritSec.Lock();
+-	DWORD dwGITCookie = (DWORD)_CDV::GetUnknown(dwCookie);
++	DWORD dwGITCookie = (DWORD)m_vec.GetUnknown(dwCookie);
+ 	HRESULT hRes = m_vec.Remove(dwCookie) ? S_OK : CONNECT_E_NOCONNECTION;
+ 	m_CPMTCritSec.Unlock();
+ 	if (hRes == S_OK && dwGITCookie != NULL)
+@@ -202,7 +202,7 @@
+ 			{
+ 				// AddRef() implicit in GetInterfaceFromGlobal():
+ 				pend->pUnk = pUnk;
+-				pend->dwCookie = _CDV::GetCookie(reinterpret_cast<IUnknown **>(pDWCookie));
++				pend->dwCookie = m_vec.GetCookie(reinterpret_cast<IUnknown **>(pDWCookie));
+ 				pend++;
+ 			}
+ 		}
+Index: COM_Component_Src/csDLMan.cpp
+===================================================================
+--- COM_Component_Src/csDLMan.cpp	(revision 71)
++++ COM_Component_Src/csDLMan.cpp	(working copy)
+@@ -2065,7 +2065,7 @@
+ 		&& (wbhookdata[H_KEYBOARD].hwndTarget) 
+ 		&& (::IsWindow(wbhookdata[H_KEYBOARD].hwndTarget)) )
+ 	{
+-		DWORD dwresult = 0;
++		DWORD_PTR dwresult = 0;
+ 		//UINT umsg = WM_KEYDOWN;
+ 		////wParam = virtual-key code
+ 		//// Reference: WM_KEYDOWN on MSDN
+@@ -2112,7 +2112,7 @@
+ 		&& (wbhookdata[H_MOUSE].hwndTarget) 
+ 		&& (::IsWindow(wbhookdata[H_MOUSE].hwndTarget)) )
+ 	{
+-		DWORD dwresult = 0;
++		DWORD_PTR dwresult = 0;
+ 		::SendMessageTimeout(wbhookdata[H_MOUSE].hwndTarget, wbhookdata[H_MOUSE].uiHookMsgID , 
+ 			wParam, lParam, SMTO_ABORTIFHUNG, 500, &dwresult);
+ 		long lret = (long)dwresult;
+@@ -2134,7 +2134,7 @@
+ 		&& (wbhookdata[H_KEYBOARD_LL].hwndTarget) 
+ 		&& (::IsWindow(wbhookdata[H_KEYBOARD_LL].hwndTarget)) )
+ 	{
+-		DWORD dwresult = 0;
++		DWORD_PTR dwresult = 0;
+ 		
+ 		::SendMessageTimeout(wbhookdata[H_KEYBOARD_LL].hwndTarget, 
+ 			wbhookdata[H_KEYBOARD_LL].uiHookMsgID , 
+@@ -2159,7 +2159,7 @@
+ 		&& (wbhookdata[H_CALLWNDPROC].hwndTarget) 
+ 		&& (::IsWindow(wbhookdata[H_CALLWNDPROC].hwndTarget)) )
+ 	{
+-		DWORD dwresult = 0;
++		DWORD_PTR dwresult = 0;
+ 		::SendMessageTimeout(wbhookdata[H_CALLWNDPROC].hwndTarget,
+ 			wbhookdata[H_CALLWNDPROC].uiHookMsgID , 
+ 			wParam, lParam, SMTO_ABORTIFHUNG, 500, &dwresult);
+@@ -2180,7 +2180,7 @@
+ 		&& (wbhookdata[H_CBT].hwndTarget) 
+ 		&& (::IsWindow(wbhookdata[H_CBT].hwndTarget)) )
+ 	{
+-		DWORD dwresult = 0;
++		DWORD_PTR dwresult = 0;
+ 		nCode_CBTProc = nCode;
+ 		//nCode
+ //HCBT_ACTIVATE
+@@ -2216,7 +2216,7 @@
+ 		&& (wbhookdata[H_GETMESSAGE].hwndTarget) 
+ 		&& (::IsWindow(wbhookdata[H_GETMESSAGE].hwndTarget)) )
+ 	{
+-		DWORD dwresult = 0;
++		DWORD_PTR dwresult = 0;
+ 		::SendMessageTimeout(wbhookdata[H_GETMESSAGE].hwndTarget,
+ 			wbhookdata[H_GETMESSAGE].uiHookMsgID , 
+ 			wParam, lParam, SMTO_ABORTIFHUNG, 500, &dwresult);
+@@ -2237,7 +2237,7 @@
+ 		&& (wbhookdata[H_MSGFILTER].hwndTarget) 
+ 		&& (::IsWindow(wbhookdata[H_MSGFILTER].hwndTarget)) )
+ 	{
+-		DWORD dwresult = 0;
++		DWORD_PTR dwresult = 0;
+ 		nCode_MessageProc = nCode;
+ 		//nCode
+ //MSGF_DDEMGR
+@@ -2264,7 +2264,7 @@
+ 		&& (wbhookdata[H_MOUSE_LL].hwndTarget) 
+ 		&& (::IsWindow(wbhookdata[H_MOUSE_LL].hwndTarget)) )
+ 	{
+-		DWORD dwresult = 0;
++		DWORD_PTR dwresult = 0;
+ 		//wParam, one of WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEMOVE,
+ 		//WM_MOUSEWHEEL, WM_RBUTTONDOWN, or WM_RBUTTONUP.
+ 		//LPMSLLHOOKSTRUCT msg = (LPMSLLHOOKSTRUCT)lParam
+@@ -2286,7 +2286,7 @@
+ 		&& (wbhookdata[H_FOREGROUNDIDLE].hwndTarget) 
+ 		&& (::IsWindow(wbhookdata[H_FOREGROUNDIDLE].hwndTarget)) )
+ 	{
+-		DWORD dwresult = 0;
++		DWORD_PTR dwresult = 0;
+ 		//wParam and lParam are not used
+ 		::SendMessageTimeout(wbhookdata[H_FOREGROUNDIDLE].hwndTarget,
+ 			wbhookdata[H_FOREGROUNDIDLE].uiHookMsgID , 
+@@ -2306,7 +2306,7 @@
+ 		&& (wbhookdata[H_CALLWNDPROCRET].hwndTarget) 
+ 		&& (::IsWindow(wbhookdata[H_CALLWNDPROCRET].hwndTarget)) )
+ 	{
+-		DWORD dwresult = 0;
++		DWORD_PTR dwresult = 0;
+ 		//wParam, Specifies whether the message is sent by the current process.
+ 		//If the message is sent by the current process, it is nonzero; otherwise, it is NULL.
+ 		//LPCWPRETSTRUCT msg = (LPCWPRETSTRUCT)lParam;
+@@ -2328,7 +2328,7 @@
+ 		&& (wbhookdata[H_SYSMSGFILTER].hwndTarget) 
+ 		&& (::IsWindow(wbhookdata[H_SYSMSGFILTER].hwndTarget)) )
+ 	{
+-		DWORD dwresult = 0;
++		DWORD_PTR dwresult = 0;
+ 		nCode_SysMsgProc = nCode;
+ 		//nCode
+ //MSGF_DIALOGBOX
+@@ -2354,7 +2354,7 @@
+ 		&& (wbhookdata[H_SHELL].hwndTarget) 
+ 		&& (::IsWindow(wbhookdata[H_SHELL].hwndTarget)) )
+ 	{
+-		DWORD dwresult = 0;
++		DWORD_PTR dwresult = 0;
+ 		nCode_ShellProc = nCode;
+ 		//contents of wParam and lParam depend on nCode
+ 		::SendMessageTimeout(wbhookdata[H_SHELL].hwndTarget,
+Index: COM_Component_Src/csExWBDLMan.h
+===================================================================
+--- COM_Component_Src/csExWBDLMan.h	(revision 71)
++++ COM_Component_Src/csExWBDLMan.h	(working copy)
+@@ -1,19 +1,27 @@
++
++
+ /* this ALWAYS GENERATED file contains the definitions for the interfaces */
+ 
+ 
+-/* File created by MIDL compiler version 5.01.0164 */
+-/* at Wed Aug 22 07:24:48 2007
++ /* File created by MIDL compiler version 8.00.0603 */
++/* at Sat Dec 06 22:56:54 2014
+  */
+-/* Compiler settings for C:\Temp\COM_Component_Source_Binaries\csExWBDLMan.idl:
+-    Oicf (OptLev=i2), W1, Zp8, env=Win32, ms_ext, c_ext
++/* Compiler settings for csExWBDLMan.idl:
++    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=AMD64 8.00.0603 
++    protocol : dce , ms_ext, c_ext, robust
+     error checks: allocation ref bounds_check enum stub_data 
++    VC __declspec() decoration level: 
++         __declspec(uuid()), __declspec(selectany), __declspec(novtable)
++         DECLSPEC_UUID(), MIDL_INTERFACE()
+ */
+-//@@MIDL_FILE_HEADING(  )
++/* @@MIDL_FILE_HEADING(  ) */
+ 
++#pragma warning( disable: 4049 )  /* more than 64k source lines */
+ 
++
+ /* verify that the <rpcndr.h> version is high enough to compile this file*/
+ #ifndef __REQUIRED_RPCNDR_H_VERSION__
+-#define __REQUIRED_RPCNDR_H_VERSION__ 440
++#define __REQUIRED_RPCNDR_H_VERSION__ 475
+ #endif
+ 
+ #include "rpc.h"
+@@ -31,9 +39,9 @@
+ #ifndef __csExWBDLMan_h__
+ #define __csExWBDLMan_h__
+ 
+-#ifdef __cplusplus
+-extern "C"{
+-#endif 
++#if defined(_MSC_VER) && (_MSC_VER >= 1020)
++#pragma once
++#endif
+ 
+ /* Forward Declarations */ 
+ 
+@@ -40,6 +48,7 @@
+ #ifndef __IDownloadManager_FWD_DEFINED__
+ #define __IDownloadManager_FWD_DEFINED__
+ typedef interface IDownloadManager IDownloadManager;
++
+ #endif 	/* __IDownloadManager_FWD_DEFINED__ */
+ 
+ 
+@@ -46,6 +55,7 @@
+ #ifndef __IcsDLMan_FWD_DEFINED__
+ #define __IcsDLMan_FWD_DEFINED__
+ typedef interface IcsDLMan IcsDLMan;
++
+ #endif 	/* __IcsDLMan_FWD_DEFINED__ */
+ 
+ 
+@@ -52,6 +62,7 @@
+ #ifndef ___IcsDLManEvents_FWD_DEFINED__
+ #define ___IcsDLManEvents_FWD_DEFINED__
+ typedef interface _IcsDLManEvents _IcsDLManEvents;
++
+ #endif 	/* ___IcsDLManEvents_FWD_DEFINED__ */
+ 
+ 
+@@ -71,9 +82,11 @@
+ #include "oaidl.h"
+ #include "ocidl.h"
+ 
+-void __RPC_FAR * __RPC_USER MIDL_user_allocate(size_t);
+-void __RPC_USER MIDL_user_free( void __RPC_FAR * ); 
++#ifdef __cplusplus
++extern "C"{
++#endif 
+ 
++
+ #ifndef __IDownloadManager_INTERFACE_DEFINED__
+ #define __IDownloadManager_INTERFACE_DEFINED__
+ 
+@@ -90,11 +103,11 @@
+     {
+     public:
+         virtual HRESULT STDMETHODCALLTYPE Download( 
+-            /* [in] */ IMoniker __RPC_FAR *pmk,
+-            /* [in] */ IBindCtx __RPC_FAR *pbc,
++            /* [in] */ IMoniker *pmk,
++            /* [in] */ IBindCtx *pbc,
+             /* [in] */ DWORD dwBindVerb,
+             /* [in] */ LONG grfBINDF,
+-            /* [in] */ BINDINFO __RPC_FAR *pBindInfo,
++            /* [in] */ BINDINFO *pBindInfo,
+             /* [in] */ LPCOLESTR pszHeaders,
+             /* [in] */ LPCOLESTR pszRedir,
+             /* [in] */ UINT uiCP) = 0;
+@@ -101,6 +114,7 @@
+         
+     };
+     
++    
+ #else 	/* C style interface */
+ 
+     typedef struct IDownloadManagerVtbl
+@@ -107,24 +121,25 @@
+     {
+         BEGIN_INTERFACE
+         
+-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *QueryInterface )( 
+-            IDownloadManager __RPC_FAR * This,
++        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
++            IDownloadManager * This,
+             /* [in] */ REFIID riid,
+-            /* [iid_is][out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
++            /* [annotation][iid_is][out] */ 
++            _COM_Outptr_  void **ppvObject);
+         
+-        ULONG ( STDMETHODCALLTYPE __RPC_FAR *AddRef )( 
+-            IDownloadManager __RPC_FAR * This);
++        ULONG ( STDMETHODCALLTYPE *AddRef )( 
++            IDownloadManager * This);
+         
+-        ULONG ( STDMETHODCALLTYPE __RPC_FAR *Release )( 
+-            IDownloadManager __RPC_FAR * This);
++        ULONG ( STDMETHODCALLTYPE *Release )( 
++            IDownloadManager * This);
+         
+-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *Download )( 
+-            IDownloadManager __RPC_FAR * This,
+-            /* [in] */ IMoniker __RPC_FAR *pmk,
+-            /* [in] */ IBindCtx __RPC_FAR *pbc,
++        HRESULT ( STDMETHODCALLTYPE *Download )( 
++            IDownloadManager * This,
++            /* [in] */ IMoniker *pmk,
++            /* [in] */ IBindCtx *pbc,
+             /* [in] */ DWORD dwBindVerb,
+             /* [in] */ LONG grfBINDF,
+-            /* [in] */ BINDINFO __RPC_FAR *pBindInfo,
++            /* [in] */ BINDINFO *pBindInfo,
+             /* [in] */ LPCOLESTR pszHeaders,
+             /* [in] */ LPCOLESTR pszRedir,
+             /* [in] */ UINT uiCP);
+@@ -134,7 +149,7 @@
+ 
+     interface IDownloadManager
+     {
+-        CONST_VTBL struct IDownloadManagerVtbl __RPC_FAR *lpVtbl;
++        CONST_VTBL struct IDownloadManagerVtbl *lpVtbl;
+     };
+ 
+     
+@@ -143,17 +158,17 @@
+ 
+ 
+ #define IDownloadManager_QueryInterface(This,riid,ppvObject)	\
+-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
++    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+ 
+ #define IDownloadManager_AddRef(This)	\
+-    (This)->lpVtbl -> AddRef(This)
++    ( (This)->lpVtbl -> AddRef(This) ) 
+ 
+ #define IDownloadManager_Release(This)	\
+-    (This)->lpVtbl -> Release(This)
++    ( (This)->lpVtbl -> Release(This) ) 
+ 
+ 
+ #define IDownloadManager_Download(This,pmk,pbc,dwBindVerb,grfBINDF,pBindInfo,pszHeaders,pszRedir,uiCP)	\
+-    (This)->lpVtbl -> Download(This,pmk,pbc,dwBindVerb,grfBINDF,pBindInfo,pszHeaders,pszRedir,uiCP)
++    ( (This)->lpVtbl -> Download(This,pmk,pbc,dwBindVerb,grfBINDF,pBindInfo,pszHeaders,pszRedir,uiCP) ) 
+ 
+ #endif /* COBJMACROS */
+ 
+@@ -162,52 +177,34 @@
+ 
+ 
+ 
+-HRESULT STDMETHODCALLTYPE IDownloadManager_Download_Proxy( 
+-    IDownloadManager __RPC_FAR * This,
+-    /* [in] */ IMoniker __RPC_FAR *pmk,
+-    /* [in] */ IBindCtx __RPC_FAR *pbc,
+-    /* [in] */ DWORD dwBindVerb,
+-    /* [in] */ LONG grfBINDF,
+-    /* [in] */ BINDINFO __RPC_FAR *pBindInfo,
+-    /* [in] */ LPCOLESTR pszHeaders,
+-    /* [in] */ LPCOLESTR pszRedir,
+-    /* [in] */ UINT uiCP);
+ 
+-
+-void __RPC_STUB IDownloadManager_Download_Stub(
+-    IRpcStubBuffer *This,
+-    IRpcChannelBuffer *_pRpcChannelBuffer,
+-    PRPC_MESSAGE _pRpcMessage,
+-    DWORD *_pdwStubPhase);
+-
+-
+-
+ #endif 	/* __IDownloadManager_INTERFACE_DEFINED__ */
+ 
+ 
+-/* interface __MIDL_itf_csExWBDLMan_0258 */
++/* interface __MIDL_itf_csExWBDLMan_0000_0001 */
+ /* [local] */ 
+ 
+ typedef 
+ enum WINDOWSHOOK_TYPES
+-    {	WHT_CALLWNDPROC	= 0,
+-	WHT_CBT	= 1,
+-	WHT_GETMESSAGE	= 2,
+-	WHT_KEYBOARD	= 3,
+-	WHT_MOUSE	= 4,
+-	WHT_MSGFILTER	= 5,
+-	WHT_KEYBOARD_LL	= 6,
+-	WHT_MOUSE_LL	= 7,
+-	WHT_FOREGROUNDIDLE	= 8,
+-	WHT_CALLWNDPROCRET	= 9,
+-	WHT_SYSMSGFILTER	= 10,
+-	WHT_SHELL	= 11
+-    }	WINDOWSHOOK_TYPES;
++    {
++        WHT_CALLWNDPROC	= 0,
++        WHT_CBT	= 1,
++        WHT_GETMESSAGE	= 2,
++        WHT_KEYBOARD	= 3,
++        WHT_MOUSE	= 4,
++        WHT_MSGFILTER	= 5,
++        WHT_KEYBOARD_LL	= 6,
++        WHT_MOUSE_LL	= 7,
++        WHT_FOREGROUNDIDLE	= 8,
++        WHT_CALLWNDPROCRET	= 9,
++        WHT_SYSMSGFILTER	= 10,
++        WHT_SHELL	= 11
++    } 	WINDOWSHOOK_TYPES;
+ 
+ 
+ 
+-extern RPC_IF_HANDLE __MIDL_itf_csExWBDLMan_0258_v0_0_c_ifspec;
+-extern RPC_IF_HANDLE __MIDL_itf_csExWBDLMan_0258_v0_0_s_ifspec;
++extern RPC_IF_HANDLE __MIDL_itf_csExWBDLMan_0000_0001_v0_0_c_ifspec;
++extern RPC_IF_HANDLE __MIDL_itf_csExWBDLMan_0000_0001_v0_0_s_ifspec;
+ 
+ #ifndef __IcsDLMan_INTERFACE_DEFINED__
+ #define __IcsDLMan_INTERFACE_DEFINED__
+@@ -226,22 +223,22 @@
+     public:
+         virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE DownloadUrlAsync( 
+             /* [in] */ BSTR URL,
+-            /* [out][in] */ long __RPC_FAR *DLUID) = 0;
++            /* [out][in] */ long *DLUID) = 0;
+         
+         virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_HWNDInternetExplorerServer( 
+-            /* [retval][out] */ long __RPC_FAR *pVal) = 0;
++            /* [retval][out] */ long *pVal) = 0;
+         
+         virtual /* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE put_HWNDInternetExplorerServer( 
+             /* [in] */ long newVal) = 0;
+         
+         virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_HTTPSprotocol( 
+-            /* [retval][out] */ VARIANT_BOOL __RPC_FAR *pVal) = 0;
++            /* [retval][out] */ VARIANT_BOOL *pVal) = 0;
+         
+         virtual /* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE put_HTTPSprotocol( 
+             /* [in] */ VARIANT_BOOL newVal) = 0;
+         
+         virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_HTTPprotocol( 
+-            /* [retval][out] */ VARIANT_BOOL __RPC_FAR *pVal) = 0;
++            /* [retval][out] */ VARIANT_BOOL *pVal) = 0;
+         
+         virtual /* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE put_HTTPprotocol( 
+             /* [in] */ VARIANT_BOOL newVal) = 0;
+@@ -253,14 +250,15 @@
+             /* [in] */ WINDOWSHOOK_TYPES lHookType,
+             /* [in] */ long hwndTargetWnd,
+             /* [in] */ VARIANT_BOOL bStart,
+-            /* [out][in] */ long __RPC_FAR *lUWMHookMsgID) = 0;
++            /* [out][in] */ long *lUWMHookMsgID) = 0;
+         
+         virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE HookProcNCode( 
+             /* [in] */ WINDOWSHOOK_TYPES lHookType,
+-            /* [out][in] */ long __RPC_FAR *nCode) = 0;
++            /* [out][in] */ long *nCode) = 0;
+         
+     };
+     
++    
+ #else 	/* C style interface */
+ 
+     typedef struct IcsDLManVtbl
+@@ -267,90 +265,99 @@
+     {
+         BEGIN_INTERFACE
+         
+-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *QueryInterface )( 
+-            IcsDLMan __RPC_FAR * This,
++        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
++            IcsDLMan * This,
+             /* [in] */ REFIID riid,
+-            /* [iid_is][out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
++            /* [annotation][iid_is][out] */ 
++            _COM_Outptr_  void **ppvObject);
+         
+-        ULONG ( STDMETHODCALLTYPE __RPC_FAR *AddRef )( 
+-            IcsDLMan __RPC_FAR * This);
++        ULONG ( STDMETHODCALLTYPE *AddRef )( 
++            IcsDLMan * This);
+         
+-        ULONG ( STDMETHODCALLTYPE __RPC_FAR *Release )( 
+-            IcsDLMan __RPC_FAR * This);
++        ULONG ( STDMETHODCALLTYPE *Release )( 
++            IcsDLMan * This);
+         
+-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetTypeInfoCount )( 
+-            IcsDLMan __RPC_FAR * This,
+-            /* [out] */ UINT __RPC_FAR *pctinfo);
++        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
++            IcsDLMan * This,
++            /* [out] */ UINT *pctinfo);
+         
+-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetTypeInfo )( 
+-            IcsDLMan __RPC_FAR * This,
++        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
++            IcsDLMan * This,
+             /* [in] */ UINT iTInfo,
+             /* [in] */ LCID lcid,
+-            /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *ppTInfo);
++            /* [out] */ ITypeInfo **ppTInfo);
+         
+-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetIDsOfNames )( 
+-            IcsDLMan __RPC_FAR * This,
++        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
++            IcsDLMan * This,
+             /* [in] */ REFIID riid,
+-            /* [size_is][in] */ LPOLESTR __RPC_FAR *rgszNames,
+-            /* [in] */ UINT cNames,
++            /* [size_is][in] */ LPOLESTR *rgszNames,
++            /* [range][in] */ UINT cNames,
+             /* [in] */ LCID lcid,
+-            /* [size_is][out] */ DISPID __RPC_FAR *rgDispId);
++            /* [size_is][out] */ DISPID *rgDispId);
+         
+-        /* [local] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *Invoke )( 
+-            IcsDLMan __RPC_FAR * This,
+-            /* [in] */ DISPID dispIdMember,
+-            /* [in] */ REFIID riid,
+-            /* [in] */ LCID lcid,
+-            /* [in] */ WORD wFlags,
+-            /* [out][in] */ DISPPARAMS __RPC_FAR *pDispParams,
+-            /* [out] */ VARIANT __RPC_FAR *pVarResult,
+-            /* [out] */ EXCEPINFO __RPC_FAR *pExcepInfo,
+-            /* [out] */ UINT __RPC_FAR *puArgErr);
++        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
++            IcsDLMan * This,
++            /* [annotation][in] */ 
++            _In_  DISPID dispIdMember,
++            /* [annotation][in] */ 
++            _In_  REFIID riid,
++            /* [annotation][in] */ 
++            _In_  LCID lcid,
++            /* [annotation][in] */ 
++            _In_  WORD wFlags,
++            /* [annotation][out][in] */ 
++            _In_  DISPPARAMS *pDispParams,
++            /* [annotation][out] */ 
++            _Out_opt_  VARIANT *pVarResult,
++            /* [annotation][out] */ 
++            _Out_opt_  EXCEPINFO *pExcepInfo,
++            /* [annotation][out] */ 
++            _Out_opt_  UINT *puArgErr);
+         
+-        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *DownloadUrlAsync )( 
+-            IcsDLMan __RPC_FAR * This,
++        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *DownloadUrlAsync )( 
++            IcsDLMan * This,
+             /* [in] */ BSTR URL,
+-            /* [out][in] */ long __RPC_FAR *DLUID);
++            /* [out][in] */ long *DLUID);
+         
+-        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *get_HWNDInternetExplorerServer )( 
+-            IcsDLMan __RPC_FAR * This,
+-            /* [retval][out] */ long __RPC_FAR *pVal);
++        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_HWNDInternetExplorerServer )( 
++            IcsDLMan * This,
++            /* [retval][out] */ long *pVal);
+         
+-        /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *put_HWNDInternetExplorerServer )( 
+-            IcsDLMan __RPC_FAR * This,
++        /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE *put_HWNDInternetExplorerServer )( 
++            IcsDLMan * This,
+             /* [in] */ long newVal);
+         
+-        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *get_HTTPSprotocol )( 
+-            IcsDLMan __RPC_FAR * This,
+-            /* [retval][out] */ VARIANT_BOOL __RPC_FAR *pVal);
++        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_HTTPSprotocol )( 
++            IcsDLMan * This,
++            /* [retval][out] */ VARIANT_BOOL *pVal);
+         
+-        /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *put_HTTPSprotocol )( 
+-            IcsDLMan __RPC_FAR * This,
++        /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE *put_HTTPSprotocol )( 
++            IcsDLMan * This,
+             /* [in] */ VARIANT_BOOL newVal);
+         
+-        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *get_HTTPprotocol )( 
+-            IcsDLMan __RPC_FAR * This,
+-            /* [retval][out] */ VARIANT_BOOL __RPC_FAR *pVal);
++        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_HTTPprotocol )( 
++            IcsDLMan * This,
++            /* [retval][out] */ VARIANT_BOOL *pVal);
+         
+-        /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *put_HTTPprotocol )( 
+-            IcsDLMan __RPC_FAR * This,
++        /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE *put_HTTPprotocol )( 
++            IcsDLMan * This,
+             /* [in] */ VARIANT_BOOL newVal);
+         
+-        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *CancelFileDownload )( 
+-            IcsDLMan __RPC_FAR * This,
++        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *CancelFileDownload )( 
++            IcsDLMan * This,
+             /* [in] */ long DlUid);
+         
+-        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *SetupWindowsHook )( 
+-            IcsDLMan __RPC_FAR * This,
++        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *SetupWindowsHook )( 
++            IcsDLMan * This,
+             /* [in] */ WINDOWSHOOK_TYPES lHookType,
+             /* [in] */ long hwndTargetWnd,
+             /* [in] */ VARIANT_BOOL bStart,
+-            /* [out][in] */ long __RPC_FAR *lUWMHookMsgID);
++            /* [out][in] */ long *lUWMHookMsgID);
+         
+-        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *HookProcNCode )( 
+-            IcsDLMan __RPC_FAR * This,
++        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *HookProcNCode )( 
++            IcsDLMan * This,
+             /* [in] */ WINDOWSHOOK_TYPES lHookType,
+-            /* [out][in] */ long __RPC_FAR *nCode);
++            /* [out][in] */ long *nCode);
+         
+         END_INTERFACE
+     } IcsDLManVtbl;
+@@ -357,7 +364,7 @@
+ 
+     interface IcsDLMan
+     {
+-        CONST_VTBL struct IcsDLManVtbl __RPC_FAR *lpVtbl;
++        CONST_VTBL struct IcsDLManVtbl *lpVtbl;
+     };
+ 
+     
+@@ -366,57 +373,57 @@
+ 
+ 
+ #define IcsDLMan_QueryInterface(This,riid,ppvObject)	\
+-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
++    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+ 
+ #define IcsDLMan_AddRef(This)	\
+-    (This)->lpVtbl -> AddRef(This)
++    ( (This)->lpVtbl -> AddRef(This) ) 
+ 
+ #define IcsDLMan_Release(This)	\
+-    (This)->lpVtbl -> Release(This)
++    ( (This)->lpVtbl -> Release(This) ) 
+ 
+ 
+ #define IcsDLMan_GetTypeInfoCount(This,pctinfo)	\
+-    (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo)
++    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+ 
+ #define IcsDLMan_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
+-    (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo)
++    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+ 
+ #define IcsDLMan_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
+-    (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)
++    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+ 
+ #define IcsDLMan_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
+-    (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)
++    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+ 
+ 
+ #define IcsDLMan_DownloadUrlAsync(This,URL,DLUID)	\
+-    (This)->lpVtbl -> DownloadUrlAsync(This,URL,DLUID)
++    ( (This)->lpVtbl -> DownloadUrlAsync(This,URL,DLUID) ) 
+ 
+ #define IcsDLMan_get_HWNDInternetExplorerServer(This,pVal)	\
+-    (This)->lpVtbl -> get_HWNDInternetExplorerServer(This,pVal)
++    ( (This)->lpVtbl -> get_HWNDInternetExplorerServer(This,pVal) ) 
+ 
+ #define IcsDLMan_put_HWNDInternetExplorerServer(This,newVal)	\
+-    (This)->lpVtbl -> put_HWNDInternetExplorerServer(This,newVal)
++    ( (This)->lpVtbl -> put_HWNDInternetExplorerServer(This,newVal) ) 
+ 
+ #define IcsDLMan_get_HTTPSprotocol(This,pVal)	\
+-    (This)->lpVtbl -> get_HTTPSprotocol(This,pVal)
++    ( (This)->lpVtbl -> get_HTTPSprotocol(This,pVal) ) 
+ 
+ #define IcsDLMan_put_HTTPSprotocol(This,newVal)	\
+-    (This)->lpVtbl -> put_HTTPSprotocol(This,newVal)
++    ( (This)->lpVtbl -> put_HTTPSprotocol(This,newVal) ) 
+ 
+ #define IcsDLMan_get_HTTPprotocol(This,pVal)	\
+-    (This)->lpVtbl -> get_HTTPprotocol(This,pVal)
++    ( (This)->lpVtbl -> get_HTTPprotocol(This,pVal) ) 
+ 
+ #define IcsDLMan_put_HTTPprotocol(This,newVal)	\
+-    (This)->lpVtbl -> put_HTTPprotocol(This,newVal)
++    ( (This)->lpVtbl -> put_HTTPprotocol(This,newVal) ) 
+ 
+ #define IcsDLMan_CancelFileDownload(This,DlUid)	\
+-    (This)->lpVtbl -> CancelFileDownload(This,DlUid)
++    ( (This)->lpVtbl -> CancelFileDownload(This,DlUid) ) 
+ 
+ #define IcsDLMan_SetupWindowsHook(This,lHookType,hwndTargetWnd,bStart,lUWMHookMsgID)	\
+-    (This)->lpVtbl -> SetupWindowsHook(This,lHookType,hwndTargetWnd,bStart,lUWMHookMsgID)
++    ( (This)->lpVtbl -> SetupWindowsHook(This,lHookType,hwndTargetWnd,bStart,lUWMHookMsgID) ) 
+ 
+ #define IcsDLMan_HookProcNCode(This,lHookType,nCode)	\
+-    (This)->lpVtbl -> HookProcNCode(This,lHookType,nCode)
++    ( (This)->lpVtbl -> HookProcNCode(This,lHookType,nCode) ) 
+ 
+ #endif /* COBJMACROS */
+ 
+@@ -425,132 +432,7 @@
+ 
+ 
+ 
+-/* [helpstring][id] */ HRESULT STDMETHODCALLTYPE IcsDLMan_DownloadUrlAsync_Proxy( 
+-    IcsDLMan __RPC_FAR * This,
+-    /* [in] */ BSTR URL,
+-    /* [out][in] */ long __RPC_FAR *DLUID);
+ 
+-
+-void __RPC_STUB IcsDLMan_DownloadUrlAsync_Stub(
+-    IRpcStubBuffer *This,
+-    IRpcChannelBuffer *_pRpcChannelBuffer,
+-    PRPC_MESSAGE _pRpcMessage,
+-    DWORD *_pdwStubPhase);
+-
+-
+-/* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE IcsDLMan_get_HWNDInternetExplorerServer_Proxy( 
+-    IcsDLMan __RPC_FAR * This,
+-    /* [retval][out] */ long __RPC_FAR *pVal);
+-
+-
+-void __RPC_STUB IcsDLMan_get_HWNDInternetExplorerServer_Stub(
+-    IRpcStubBuffer *This,
+-    IRpcChannelBuffer *_pRpcChannelBuffer,
+-    PRPC_MESSAGE _pRpcMessage,
+-    DWORD *_pdwStubPhase);
+-
+-
+-/* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE IcsDLMan_put_HWNDInternetExplorerServer_Proxy( 
+-    IcsDLMan __RPC_FAR * This,
+-    /* [in] */ long newVal);
+-
+-
+-void __RPC_STUB IcsDLMan_put_HWNDInternetExplorerServer_Stub(
+-    IRpcStubBuffer *This,
+-    IRpcChannelBuffer *_pRpcChannelBuffer,
+-    PRPC_MESSAGE _pRpcMessage,
+-    DWORD *_pdwStubPhase);
+-
+-
+-/* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE IcsDLMan_get_HTTPSprotocol_Proxy( 
+-    IcsDLMan __RPC_FAR * This,
+-    /* [retval][out] */ VARIANT_BOOL __RPC_FAR *pVal);
+-
+-
+-void __RPC_STUB IcsDLMan_get_HTTPSprotocol_Stub(
+-    IRpcStubBuffer *This,
+-    IRpcChannelBuffer *_pRpcChannelBuffer,
+-    PRPC_MESSAGE _pRpcMessage,
+-    DWORD *_pdwStubPhase);
+-
+-
+-/* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE IcsDLMan_put_HTTPSprotocol_Proxy( 
+-    IcsDLMan __RPC_FAR * This,
+-    /* [in] */ VARIANT_BOOL newVal);
+-
+-
+-void __RPC_STUB IcsDLMan_put_HTTPSprotocol_Stub(
+-    IRpcStubBuffer *This,
+-    IRpcChannelBuffer *_pRpcChannelBuffer,
+-    PRPC_MESSAGE _pRpcMessage,
+-    DWORD *_pdwStubPhase);
+-
+-
+-/* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE IcsDLMan_get_HTTPprotocol_Proxy( 
+-    IcsDLMan __RPC_FAR * This,
+-    /* [retval][out] */ VARIANT_BOOL __RPC_FAR *pVal);
+-
+-
+-void __RPC_STUB IcsDLMan_get_HTTPprotocol_Stub(
+-    IRpcStubBuffer *This,
+-    IRpcChannelBuffer *_pRpcChannelBuffer,
+-    PRPC_MESSAGE _pRpcMessage,
+-    DWORD *_pdwStubPhase);
+-
+-
+-/* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE IcsDLMan_put_HTTPprotocol_Proxy( 
+-    IcsDLMan __RPC_FAR * This,
+-    /* [in] */ VARIANT_BOOL newVal);
+-
+-
+-void __RPC_STUB IcsDLMan_put_HTTPprotocol_Stub(
+-    IRpcStubBuffer *This,
+-    IRpcChannelBuffer *_pRpcChannelBuffer,
+-    PRPC_MESSAGE _pRpcMessage,
+-    DWORD *_pdwStubPhase);
+-
+-
+-/* [helpstring][id] */ HRESULT STDMETHODCALLTYPE IcsDLMan_CancelFileDownload_Proxy( 
+-    IcsDLMan __RPC_FAR * This,
+-    /* [in] */ long DlUid);
+-
+-
+-void __RPC_STUB IcsDLMan_CancelFileDownload_Stub(
+-    IRpcStubBuffer *This,
+-    IRpcChannelBuffer *_pRpcChannelBuffer,
+-    PRPC_MESSAGE _pRpcMessage,
+-    DWORD *_pdwStubPhase);
+-
+-
+-/* [helpstring][id] */ HRESULT STDMETHODCALLTYPE IcsDLMan_SetupWindowsHook_Proxy( 
+-    IcsDLMan __RPC_FAR * This,
+-    /* [in] */ WINDOWSHOOK_TYPES lHookType,
+-    /* [in] */ long hwndTargetWnd,
+-    /* [in] */ VARIANT_BOOL bStart,
+-    /* [out][in] */ long __RPC_FAR *lUWMHookMsgID);
+-
+-
+-void __RPC_STUB IcsDLMan_SetupWindowsHook_Stub(
+-    IRpcStubBuffer *This,
+-    IRpcChannelBuffer *_pRpcChannelBuffer,
+-    PRPC_MESSAGE _pRpcMessage,
+-    DWORD *_pdwStubPhase);
+-
+-
+-/* [helpstring][id] */ HRESULT STDMETHODCALLTYPE IcsDLMan_HookProcNCode_Proxy( 
+-    IcsDLMan __RPC_FAR * This,
+-    /* [in] */ WINDOWSHOOK_TYPES lHookType,
+-    /* [out][in] */ long __RPC_FAR *nCode);
+-
+-
+-void __RPC_STUB IcsDLMan_HookProcNCode_Stub(
+-    IRpcStubBuffer *This,
+-    IRpcChannelBuffer *_pRpcChannelBuffer,
+-    PRPC_MESSAGE _pRpcMessage,
+-    DWORD *_pdwStubPhase);
+-
+-
+-
+ #endif 	/* __IcsDLMan_INTERFACE_DEFINED__ */
+ 
+ 
+@@ -586,45 +468,54 @@
+     {
+         BEGIN_INTERFACE
+         
+-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *QueryInterface )( 
+-            _IcsDLManEvents __RPC_FAR * This,
++        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
++            _IcsDLManEvents * This,
+             /* [in] */ REFIID riid,
+-            /* [iid_is][out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
++            /* [annotation][iid_is][out] */ 
++            _COM_Outptr_  void **ppvObject);
+         
+-        ULONG ( STDMETHODCALLTYPE __RPC_FAR *AddRef )( 
+-            _IcsDLManEvents __RPC_FAR * This);
++        ULONG ( STDMETHODCALLTYPE *AddRef )( 
++            _IcsDLManEvents * This);
+         
+-        ULONG ( STDMETHODCALLTYPE __RPC_FAR *Release )( 
+-            _IcsDLManEvents __RPC_FAR * This);
++        ULONG ( STDMETHODCALLTYPE *Release )( 
++            _IcsDLManEvents * This);
+         
+-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetTypeInfoCount )( 
+-            _IcsDLManEvents __RPC_FAR * This,
+-            /* [out] */ UINT __RPC_FAR *pctinfo);
++        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
++            _IcsDLManEvents * This,
++            /* [out] */ UINT *pctinfo);
+         
+-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetTypeInfo )( 
+-            _IcsDLManEvents __RPC_FAR * This,
++        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
++            _IcsDLManEvents * This,
+             /* [in] */ UINT iTInfo,
+             /* [in] */ LCID lcid,
+-            /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *ppTInfo);
++            /* [out] */ ITypeInfo **ppTInfo);
+         
+-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetIDsOfNames )( 
+-            _IcsDLManEvents __RPC_FAR * This,
++        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
++            _IcsDLManEvents * This,
+             /* [in] */ REFIID riid,
+-            /* [size_is][in] */ LPOLESTR __RPC_FAR *rgszNames,
+-            /* [in] */ UINT cNames,
++            /* [size_is][in] */ LPOLESTR *rgszNames,
++            /* [range][in] */ UINT cNames,
+             /* [in] */ LCID lcid,
+-            /* [size_is][out] */ DISPID __RPC_FAR *rgDispId);
++            /* [size_is][out] */ DISPID *rgDispId);
+         
+-        /* [local] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *Invoke )( 
+-            _IcsDLManEvents __RPC_FAR * This,
+-            /* [in] */ DISPID dispIdMember,
+-            /* [in] */ REFIID riid,
+-            /* [in] */ LCID lcid,
+-            /* [in] */ WORD wFlags,
+-            /* [out][in] */ DISPPARAMS __RPC_FAR *pDispParams,
+-            /* [out] */ VARIANT __RPC_FAR *pVarResult,
+-            /* [out] */ EXCEPINFO __RPC_FAR *pExcepInfo,
+-            /* [out] */ UINT __RPC_FAR *puArgErr);
++        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
++            _IcsDLManEvents * This,
++            /* [annotation][in] */ 
++            _In_  DISPID dispIdMember,
++            /* [annotation][in] */ 
++            _In_  REFIID riid,
++            /* [annotation][in] */ 
++            _In_  LCID lcid,
++            /* [annotation][in] */ 
++            _In_  WORD wFlags,
++            /* [annotation][out][in] */ 
++            _In_  DISPPARAMS *pDispParams,
++            /* [annotation][out] */ 
++            _Out_opt_  VARIANT *pVarResult,
++            /* [annotation][out] */ 
++            _Out_opt_  EXCEPINFO *pExcepInfo,
++            /* [annotation][out] */ 
++            _Out_opt_  UINT *puArgErr);
+         
+         END_INTERFACE
+     } _IcsDLManEventsVtbl;
+@@ -631,7 +522,7 @@
+ 
+     interface _IcsDLManEvents
+     {
+-        CONST_VTBL struct _IcsDLManEventsVtbl __RPC_FAR *lpVtbl;
++        CONST_VTBL struct _IcsDLManEventsVtbl *lpVtbl;
+     };
+ 
+     
+@@ -640,26 +531,26 @@
+ 
+ 
+ #define _IcsDLManEvents_QueryInterface(This,riid,ppvObject)	\
+-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
++    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+ 
+ #define _IcsDLManEvents_AddRef(This)	\
+-    (This)->lpVtbl -> AddRef(This)
++    ( (This)->lpVtbl -> AddRef(This) ) 
+ 
+ #define _IcsDLManEvents_Release(This)	\
+-    (This)->lpVtbl -> Release(This)
++    ( (This)->lpVtbl -> Release(This) ) 
+ 
+ 
+ #define _IcsDLManEvents_GetTypeInfoCount(This,pctinfo)	\
+-    (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo)
++    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+ 
+ #define _IcsDLManEvents_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
+-    (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo)
++    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+ 
+ #define _IcsDLManEvents_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
+-    (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)
++    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+ 
+ #define _IcsDLManEvents_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
+-    (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)
++    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+ 
+ #endif /* COBJMACROS */
+ 
+@@ -681,10 +572,10 @@
+ 
+ /* Additional Prototypes for ALL interfaces */
+ 
+-unsigned long             __RPC_USER  BSTR_UserSize(     unsigned long __RPC_FAR *, unsigned long            , BSTR __RPC_FAR * ); 
+-unsigned char __RPC_FAR * __RPC_USER  BSTR_UserMarshal(  unsigned long __RPC_FAR *, unsigned char __RPC_FAR *, BSTR __RPC_FAR * ); 
+-unsigned char __RPC_FAR * __RPC_USER  BSTR_UserUnmarshal(unsigned long __RPC_FAR *, unsigned char __RPC_FAR *, BSTR __RPC_FAR * ); 
+-void                      __RPC_USER  BSTR_UserFree(     unsigned long __RPC_FAR *, BSTR __RPC_FAR * ); 
++unsigned long             __RPC_USER  BSTR_UserSize(     unsigned long *, unsigned long            , BSTR * ); 
++unsigned char * __RPC_USER  BSTR_UserMarshal(  unsigned long *, unsigned char *, BSTR * ); 
++unsigned char * __RPC_USER  BSTR_UserUnmarshal(unsigned long *, unsigned char *, BSTR * ); 
++void                      __RPC_USER  BSTR_UserFree(     unsigned long *, BSTR * ); 
+ 
+ /* end of Additional Prototypes */
+ 
+@@ -693,3 +584,5 @@
+ #endif
+ 
+ #endif
++
++
+Index: COM_Component_Src/csExWBDLMan.tlb
+===================================================================
+Cannot display: file marked as a binary type.
+svn:mime-type = application/octet-stream
+Index: COM_Component_Src/csExWBDLMan_i.c
+===================================================================
+--- COM_Component_Src/csExWBDLMan_i.c	(revision 71)
++++ COM_Component_Src/csExWBDLMan_i.c	(working copy)
+@@ -1,22 +1,49 @@
+-/* this file contains the actual definitions of */
+-/* the IIDs and CLSIDs */
+ 
++
++/* this ALWAYS GENERATED file contains the IIDs and CLSIDs */
++
+ /* link this file in with the server and any clients */
+ 
+ 
+-/* File created by MIDL compiler version 5.01.0164 */
+-/* at Wed Aug 22 07:24:48 2007
++ /* File created by MIDL compiler version 8.00.0603 */
++/* at Sat Dec 06 22:56:54 2014
+  */
+-/* Compiler settings for C:\Temp\COM_Component_Source_Binaries\csExWBDLMan.idl:
+-    Oicf (OptLev=i2), W1, Zp8, env=Win32, ms_ext, c_ext
++/* Compiler settings for csExWBDLMan.idl:
++    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=AMD64 8.00.0603 
++    protocol : dce , ms_ext, c_ext, robust
+     error checks: allocation ref bounds_check enum stub_data 
++    VC __declspec() decoration level: 
++         __declspec(uuid()), __declspec(selectany), __declspec(novtable)
++         DECLSPEC_UUID(), MIDL_INTERFACE()
+ */
+-//@@MIDL_FILE_HEADING(  )
++/* @@MIDL_FILE_HEADING(  ) */
++
++#pragma warning( disable: 4049 )  /* more than 64k source lines */
++
++
+ #ifdef __cplusplus
+ extern "C"{
+ #endif 
+ 
+ 
++#include <rpc.h>
++#include <rpcndr.h>
++
++#ifdef _MIDL_USE_GUIDDEF_
++
++#ifndef INITGUID
++#define INITGUID
++#include <guiddef.h>
++#undef INITGUID
++#else
++#include <guiddef.h>
++#endif
++
++#define MIDL_DEFINE_GUID(type,name,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) \
++        DEFINE_GUID(name,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8)
++
++#else // !_MIDL_USE_GUIDDEF_
++
+ #ifndef __IID_DEFINED__
+ #define __IID_DEFINED__
+ 
+@@ -35,22 +62,30 @@
+ typedef IID CLSID;
+ #endif // CLSID_DEFINED
+ 
+-const IID IID_IDownloadManager = {0x988934A4,0x064B,0x11D3,{0xBB,0x80,0x00,0x10,0x4B,0x35,0xE7,0xF9}};
++#define MIDL_DEFINE_GUID(type,name,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) \
++        const type name = {l,w1,w2,{b1,b2,b3,b4,b5,b6,b7,b8}}
+ 
++#endif !_MIDL_USE_GUIDDEF_
+ 
+-const IID IID_IcsDLMan = {0x5E0CF8CC,0x2057,0x4566,{0xB5,0xF6,0x9A,0xE8,0x17,0xE3,0xFB,0x0A}};
++MIDL_DEFINE_GUID(IID, IID_IDownloadManager,0x988934A4,0x064B,0x11D3,0xBB,0x80,0x00,0x10,0x4B,0x35,0xE7,0xF9);
+ 
+ 
+-const IID LIBID_CSEXWBDLMANLib = {0x8F81BC06,0xC252,0x4437,{0x92,0xEC,0xE3,0x43,0xAF,0xBA,0xA0,0x3A}};
++MIDL_DEFINE_GUID(IID, IID_IcsDLMan,0x5E0CF8CC,0x2057,0x4566,0xB5,0xF6,0x9A,0xE8,0x17,0xE3,0xFB,0x0A);
+ 
+ 
+-const IID DIID__IcsDLManEvents = {0xAD7128D1,0xB6B9,0x4F0F,{0xA0,0x21,0x5F,0x24,0x86,0xCC,0xBC,0xC3}};
++MIDL_DEFINE_GUID(IID, LIBID_CSEXWBDLMANLib,0x8F81BC06,0xC252,0x4437,0x92,0xEC,0xE3,0x43,0xAF,0xBA,0xA0,0x3A);
+ 
+ 
+-const CLSID CLSID_csDLMan = {0xA1FE23EF,0x03EF,0x4759,{0xB0,0x21,0x66,0x84,0x43,0xC3,0x7A,0x24}};
++MIDL_DEFINE_GUID(IID, DIID__IcsDLManEvents,0xAD7128D1,0xB6B9,0x4F0F,0xA0,0x21,0x5F,0x24,0x86,0xCC,0xBC,0xC3);
+ 
+ 
++MIDL_DEFINE_GUID(CLSID, CLSID_csDLMan,0xA1FE23EF,0x03EF,0x4759,0xB0,0x21,0x66,0x84,0x43,0xC3,0x7A,0x24);
++
++#undef MIDL_DEFINE_GUID
++
+ #ifdef __cplusplus
+ }
+ #endif
+ 
++
++
+Index: COM_Component_Src/csExWBDLMan_p.c
+===================================================================
+--- COM_Component_Src/csExWBDLMan_p.c	(revision 71)
++++ COM_Component_Src/csExWBDLMan_p.c	(working copy)
+@@ -1,21 +1,40 @@
++
++
+ /* this ALWAYS GENERATED file contains the proxy stub code */
+ 
+ 
+-/* File created by MIDL compiler version 5.01.0164 */
+-/* at Wed Aug 22 07:24:48 2007
++ /* File created by MIDL compiler version 8.00.0603 */
++/* at Sat Dec 06 22:56:54 2014
+  */
+-/* Compiler settings for C:\Temp\COM_Component_Source_Binaries\csExWBDLMan.idl:
+-    Oicf (OptLev=i2), W1, Zp8, env=Win32, ms_ext, c_ext
++/* Compiler settings for csExWBDLMan.idl:
++    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=AMD64 8.00.0603 
++    protocol : dce , ms_ext, c_ext, robust
+     error checks: allocation ref bounds_check enum stub_data 
++    VC __declspec() decoration level: 
++         __declspec(uuid()), __declspec(selectany), __declspec(novtable)
++         DECLSPEC_UUID(), MIDL_INTERFACE()
+ */
+-//@@MIDL_FILE_HEADING(  )
++/* @@MIDL_FILE_HEADING(  ) */
+ 
++#if defined(_M_AMD64)
++
++
++#pragma warning( disable: 4049 )  /* more than 64k source lines */
++#if _MSC_VER >= 1200
++#pragma warning(push)
++#endif
++
++#pragma warning( disable: 4211 )  /* redefine extern to static */
++#pragma warning( disable: 4232 )  /* dllimport identity*/
++#pragma warning( disable: 4024 )  /* array to pointer mapping*/
++#pragma warning( disable: 4152 )  /* function/data pointer conversion in expression */
++
+ #define USE_STUBLESS_PROXY
+ 
+ 
+ /* verify that the <rpcproxy.h> version is high enough to compile this file*/
+ #ifndef __REDQ_RPCPROXY_H_VERSION__
+-#define __REQUIRED_RPCPROXY_H_VERSION__ 440
++#define __REQUIRED_RPCPROXY_H_VERSION__ 475
+ #endif
+ 
+ 
+@@ -22,202 +41,59 @@
+ #include "rpcproxy.h"
+ #ifndef __RPCPROXY_H_VERSION__
+ #error this stub requires an updated version of <rpcproxy.h>
+-#endif // __RPCPROXY_H_VERSION__
++#endif /* __RPCPROXY_H_VERSION__ */
+ 
+ 
+ #include "csExWBDLMan.h"
+ 
+-#define TYPE_FORMAT_STRING_SIZE   49                                
+-#define PROC_FORMAT_STRING_SIZE   311                               
++#define TYPE_FORMAT_STRING_SIZE   51                                
++#define PROC_FORMAT_STRING_SIZE   411                               
++#define EXPR_FORMAT_STRING_SIZE   1                                 
++#define TRANSMIT_AS_TABLE_SIZE    0            
++#define WIRE_MARSHAL_TABLE_SIZE   1            
+ 
+-typedef struct _MIDL_TYPE_FORMAT_STRING
++typedef struct _csExWBDLMan_MIDL_TYPE_FORMAT_STRING
+     {
+     short          Pad;
+     unsigned char  Format[ TYPE_FORMAT_STRING_SIZE ];
+-    } MIDL_TYPE_FORMAT_STRING;
++    } csExWBDLMan_MIDL_TYPE_FORMAT_STRING;
+ 
+-typedef struct _MIDL_PROC_FORMAT_STRING
++typedef struct _csExWBDLMan_MIDL_PROC_FORMAT_STRING
+     {
+     short          Pad;
+     unsigned char  Format[ PROC_FORMAT_STRING_SIZE ];
+-    } MIDL_PROC_FORMAT_STRING;
++    } csExWBDLMan_MIDL_PROC_FORMAT_STRING;
+ 
++typedef struct _csExWBDLMan_MIDL_EXPR_FORMAT_STRING
++    {
++    long          Pad;
++    unsigned char  Format[ EXPR_FORMAT_STRING_SIZE ];
++    } csExWBDLMan_MIDL_EXPR_FORMAT_STRING;
+ 
+-extern const MIDL_TYPE_FORMAT_STRING __MIDL_TypeFormatString;
+-extern const MIDL_PROC_FORMAT_STRING __MIDL_ProcFormatString;
+ 
++static const RPC_SYNTAX_IDENTIFIER  _RpcTransferSyntax = 
++{{0x8A885D04,0x1CEB,0x11C9,{0x9F,0xE8,0x08,0x00,0x2B,0x10,0x48,0x60}},{2,0}};
+ 
+-/* Object interface: IUnknown, ver. 0.0,
+-   GUID={0x00000000,0x0000,0x0000,{0xC0,0x00,0x00,0x00,0x00,0x00,0x00,0x46}} */
+ 
++extern const csExWBDLMan_MIDL_TYPE_FORMAT_STRING csExWBDLMan__MIDL_TypeFormatString;
++extern const csExWBDLMan_MIDL_PROC_FORMAT_STRING csExWBDLMan__MIDL_ProcFormatString;
++extern const csExWBDLMan_MIDL_EXPR_FORMAT_STRING csExWBDLMan__MIDL_ExprFormatString;
+ 
+-/* Object interface: IDownloadManager, ver. 0.0,
+-   GUID={0x988934A4,0x064B,0x11D3,{0xBB,0x80,0x00,0x10,0x4B,0x35,0xE7,0xF9}} */
+ 
+-
+-/* Standard interface: __MIDL_itf_csExWBDLMan_0258, ver. 0.0,
+-   GUID={0x00000000,0x0000,0x0000,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}} */
+-
+-
+-/* Object interface: IDispatch, ver. 0.0,
+-   GUID={0x00020400,0x0000,0x0000,{0xC0,0x00,0x00,0x00,0x00,0x00,0x00,0x46}} */
+-
+-
+-/* Object interface: IcsDLMan, ver. 0.0,
+-   GUID={0x5E0CF8CC,0x2057,0x4566,{0xB5,0xF6,0x9A,0xE8,0x17,0xE3,0xFB,0x0A}} */
+-
+-
+ extern const MIDL_STUB_DESC Object_StubDesc;
+ 
+ 
+ extern const MIDL_SERVER_INFO IcsDLMan_ServerInfo;
++extern const MIDL_STUBLESS_PROXY_INFO IcsDLMan_ProxyInfo;
+ 
+-#pragma code_seg(".orpc")
+-extern const USER_MARSHAL_ROUTINE_QUADRUPLE UserMarshalRoutines[1];
+ 
+-static const MIDL_STUB_DESC Object_StubDesc = 
+-    {
+-    0,
+-    NdrOleAllocate,
+-    NdrOleFree,
+-    0,
+-    0,
+-    0,
+-    0,
+-    0,
+-    __MIDL_TypeFormatString.Format,
+-    1, /* -error bounds_check flag */
+-    0x20000, /* Ndr library version */
+-    0,
+-    0x50100a4, /* MIDL Version 5.1.164 */
+-    0,
+-    UserMarshalRoutines,
+-    0,  /* notify & notify_flag routine table */
+-    1,  /* Flags */
+-    0,  /* Reserved3 */
+-    0,  /* Reserved4 */
+-    0   /* Reserved5 */
+-    };
++extern const USER_MARSHAL_ROUTINE_QUADRUPLE UserMarshalRoutines[ WIRE_MARSHAL_TABLE_SIZE ];
+ 
+-static const unsigned short IcsDLMan_FormatStringOffsetTable[] = 
+-    {
+-    (unsigned short) -1,
+-    (unsigned short) -1,
+-    (unsigned short) -1,
+-    (unsigned short) -1,
+-    0,
+-    34,
+-    62,
+-    90,
+-    118,
+-    146,
+-    174,
+-    202,
+-    230,
+-    276
+-    };
+-
+-static const MIDL_SERVER_INFO IcsDLMan_ServerInfo = 
+-    {
+-    &Object_StubDesc,
+-    0,
+-    __MIDL_ProcFormatString.Format,
+-    &IcsDLMan_FormatStringOffsetTable[-3],
+-    0,
+-    0,
+-    0,
+-    0
+-    };
+-
+-static const MIDL_STUBLESS_PROXY_INFO IcsDLMan_ProxyInfo =
+-    {
+-    &Object_StubDesc,
+-    __MIDL_ProcFormatString.Format,
+-    &IcsDLMan_FormatStringOffsetTable[-3],
+-    0,
+-    0,
+-    0
+-    };
+-
+-CINTERFACE_PROXY_VTABLE(17) _IcsDLManProxyVtbl = 
+-{
+-    &IcsDLMan_ProxyInfo,
+-    &IID_IcsDLMan,
+-    IUnknown_QueryInterface_Proxy,
+-    IUnknown_AddRef_Proxy,
+-    IUnknown_Release_Proxy ,
+-    0 /* (void *)-1 /* IDispatch::GetTypeInfoCount */ ,
+-    0 /* (void *)-1 /* IDispatch::GetTypeInfo */ ,
+-    0 /* (void *)-1 /* IDispatch::GetIDsOfNames */ ,
+-    0 /* IDispatch_Invoke_Proxy */ ,
+-    (void *)-1 /* IcsDLMan::DownloadUrlAsync */ ,
+-    (void *)-1 /* IcsDLMan::get_HWNDInternetExplorerServer */ ,
+-    (void *)-1 /* IcsDLMan::put_HWNDInternetExplorerServer */ ,
+-    (void *)-1 /* IcsDLMan::get_HTTPSprotocol */ ,
+-    (void *)-1 /* IcsDLMan::put_HTTPSprotocol */ ,
+-    (void *)-1 /* IcsDLMan::get_HTTPprotocol */ ,
+-    (void *)-1 /* IcsDLMan::put_HTTPprotocol */ ,
+-    (void *)-1 /* IcsDLMan::CancelFileDownload */ ,
+-    (void *)-1 /* IcsDLMan::SetupWindowsHook */ ,
+-    (void *)-1 /* IcsDLMan::HookProcNCode */
+-};
+-
+-
+-static const PRPC_STUB_FUNCTION IcsDLMan_table[] =
+-{
+-    STUB_FORWARDING_FUNCTION,
+-    STUB_FORWARDING_FUNCTION,
+-    STUB_FORWARDING_FUNCTION,
+-    STUB_FORWARDING_FUNCTION,
+-    NdrStubCall2,
+-    NdrStubCall2,
+-    NdrStubCall2,
+-    NdrStubCall2,
+-    NdrStubCall2,
+-    NdrStubCall2,
+-    NdrStubCall2,
+-    NdrStubCall2,
+-    NdrStubCall2,
+-    NdrStubCall2
+-};
+-
+-CInterfaceStubVtbl _IcsDLManStubVtbl =
+-{
+-    &IID_IcsDLMan,
+-    &IcsDLMan_ServerInfo,
+-    17,
+-    &IcsDLMan_table[-3],
+-    CStdStubBuffer_DELEGATING_METHODS
+-};
+-
+-#pragma data_seg(".rdata")
+-
+-static const USER_MARSHAL_ROUTINE_QUADRUPLE UserMarshalRoutines[1] = 
+-        {
+-            
+-            {
+-            BSTR_UserSize
+-            ,BSTR_UserMarshal
+-            ,BSTR_UserUnmarshal
+-            ,BSTR_UserFree
+-            }
+-
+-        };
+-
+-
+-#if !defined(__RPC_WIN32__)
++#if !defined(__RPC_WIN64__)
+ #error  Invalid build platform for this stub.
+ #endif
+ 
+-#if !(TARGET_IS_NT40_OR_LATER)
+-#error You need a Windows NT 4.0 or later to run this stub because it uses these features:
+-#error   -Oif or -Oicf, [wire_marshal] or [user_marshal] attribute, more than 32 methods in the interface.
+-#error However, your C/C++ compilation flags indicate you intend to run this app on earlier systems.
+-#error This app will die there with the RPC_X_WRONG_STUB_VERSION error.
+-#endif
+-
+-
+-static const MIDL_PROC_FORMAT_STRING __MIDL_ProcFormatString =
++static const csExWBDLMan_MIDL_PROC_FORMAT_STRING csExWBDLMan__MIDL_ProcFormatString =
+     {
+         0,
+         {
+@@ -228,432 +104,352 @@
+ 			0x6c,		/* Old Flags:  object, Oi2 */
+ /*  2 */	NdrFcLong( 0x0 ),	/* 0 */
+ /*  6 */	NdrFcShort( 0x7 ),	/* 7 */
+-#ifndef _ALPHA_
+-/*  8 */	NdrFcShort( 0x10 ),	/* x86, MIPS, PPC Stack size/offset = 16 */
+-#else
+-			NdrFcShort( 0x20 ),	/* Alpha Stack size/offset = 32 */
+-#endif
+-/* 10 */	NdrFcShort( 0x8 ),	/* 8 */
+-/* 12 */	NdrFcShort( 0x10 ),	/* 16 */
+-/* 14 */	0x6,		/* Oi2 Flags:  clt must size, has return, */
++/*  8 */	NdrFcShort( 0x20 ),	/* X64 Stack size/offset = 32 */
++/* 10 */	NdrFcShort( 0x1c ),	/* 28 */
++/* 12 */	NdrFcShort( 0x24 ),	/* 36 */
++/* 14 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+ 			0x3,		/* 3 */
++/* 16 */	0xa,		/* 10 */
++			0x5,		/* Ext Flags:  new corr desc, srv corr check, */
++/* 18 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 20 */	NdrFcShort( 0x1 ),	/* 1 */
++/* 22 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 24 */	NdrFcShort( 0x0 ),	/* 0 */
+ 
+ 	/* Parameter URL */
+ 
+-/* 16 */	NdrFcShort( 0x8b ),	/* Flags:  must size, must free, in, by val, */
+-#ifndef _ALPHA_
+-/* 18 */	NdrFcShort( 0x4 ),	/* x86, MIPS, PPC Stack size/offset = 4 */
+-#else
+-			NdrFcShort( 0x8 ),	/* Alpha Stack size/offset = 8 */
+-#endif
+-/* 20 */	NdrFcShort( 0x1a ),	/* Type Offset=26 */
++/* 26 */	NdrFcShort( 0x8b ),	/* Flags:  must size, must free, in, by val, */
++/* 28 */	NdrFcShort( 0x8 ),	/* X64 Stack size/offset = 8 */
++/* 30 */	NdrFcShort( 0x1c ),	/* Type Offset=28 */
+ 
+ 	/* Parameter DLUID */
+ 
+-/* 22 */	NdrFcShort( 0x158 ),	/* Flags:  in, out, base type, simple ref, */
+-#ifndef _ALPHA_
+-/* 24 */	NdrFcShort( 0x8 ),	/* x86, MIPS, PPC Stack size/offset = 8 */
+-#else
+-			NdrFcShort( 0x10 ),	/* Alpha Stack size/offset = 16 */
+-#endif
+-/* 26 */	0x8,		/* FC_LONG */
++/* 32 */	NdrFcShort( 0x158 ),	/* Flags:  in, out, base type, simple ref, */
++/* 34 */	NdrFcShort( 0x10 ),	/* X64 Stack size/offset = 16 */
++/* 36 */	0x8,		/* FC_LONG */
+ 			0x0,		/* 0 */
+ 
+ 	/* Return value */
+ 
+-/* 28 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+-#ifndef _ALPHA_
+-/* 30 */	NdrFcShort( 0xc ),	/* x86, MIPS, PPC Stack size/offset = 12 */
+-#else
+-			NdrFcShort( 0x18 ),	/* Alpha Stack size/offset = 24 */
+-#endif
+-/* 32 */	0x8,		/* FC_LONG */
++/* 38 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
++/* 40 */	NdrFcShort( 0x18 ),	/* X64 Stack size/offset = 24 */
++/* 42 */	0x8,		/* FC_LONG */
+ 			0x0,		/* 0 */
+ 
+ 	/* Procedure get_HWNDInternetExplorerServer */
+ 
+-/* 34 */	0x33,		/* FC_AUTO_HANDLE */
++/* 44 */	0x33,		/* FC_AUTO_HANDLE */
+ 			0x6c,		/* Old Flags:  object, Oi2 */
+-/* 36 */	NdrFcLong( 0x0 ),	/* 0 */
+-/* 40 */	NdrFcShort( 0x8 ),	/* 8 */
+-#ifndef _ALPHA_
+-/* 42 */	NdrFcShort( 0xc ),	/* x86, MIPS, PPC Stack size/offset = 12 */
+-#else
+-			NdrFcShort( 0x18 ),	/* Alpha Stack size/offset = 24 */
+-#endif
+-/* 44 */	NdrFcShort( 0x0 ),	/* 0 */
+-/* 46 */	NdrFcShort( 0x10 ),	/* 16 */
+-/* 48 */	0x4,		/* Oi2 Flags:  has return, */
++/* 46 */	NdrFcLong( 0x0 ),	/* 0 */
++/* 50 */	NdrFcShort( 0x8 ),	/* 8 */
++/* 52 */	NdrFcShort( 0x18 ),	/* X64 Stack size/offset = 24 */
++/* 54 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 56 */	NdrFcShort( 0x24 ),	/* 36 */
++/* 58 */	0x44,		/* Oi2 Flags:  has return, has ext, */
+ 			0x2,		/* 2 */
++/* 60 */	0xa,		/* 10 */
++			0x1,		/* Ext Flags:  new corr desc, */
++/* 62 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 64 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 66 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 68 */	NdrFcShort( 0x0 ),	/* 0 */
+ 
+ 	/* Parameter pVal */
+ 
+-/* 50 */	NdrFcShort( 0x2150 ),	/* Flags:  out, base type, simple ref, srv alloc size=8 */
+-#ifndef _ALPHA_
+-/* 52 */	NdrFcShort( 0x4 ),	/* x86, MIPS, PPC Stack size/offset = 4 */
+-#else
+-			NdrFcShort( 0x8 ),	/* Alpha Stack size/offset = 8 */
+-#endif
+-/* 54 */	0x8,		/* FC_LONG */
++/* 70 */	NdrFcShort( 0x2150 ),	/* Flags:  out, base type, simple ref, srv alloc size=8 */
++/* 72 */	NdrFcShort( 0x8 ),	/* X64 Stack size/offset = 8 */
++/* 74 */	0x8,		/* FC_LONG */
+ 			0x0,		/* 0 */
+ 
+ 	/* Return value */
+ 
+-/* 56 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+-#ifndef _ALPHA_
+-/* 58 */	NdrFcShort( 0x8 ),	/* x86, MIPS, PPC Stack size/offset = 8 */
+-#else
+-			NdrFcShort( 0x10 ),	/* Alpha Stack size/offset = 16 */
+-#endif
+-/* 60 */	0x8,		/* FC_LONG */
++/* 76 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
++/* 78 */	NdrFcShort( 0x10 ),	/* X64 Stack size/offset = 16 */
++/* 80 */	0x8,		/* FC_LONG */
+ 			0x0,		/* 0 */
+ 
+ 	/* Procedure put_HWNDInternetExplorerServer */
+ 
+-/* 62 */	0x33,		/* FC_AUTO_HANDLE */
++/* 82 */	0x33,		/* FC_AUTO_HANDLE */
+ 			0x6c,		/* Old Flags:  object, Oi2 */
+-/* 64 */	NdrFcLong( 0x0 ),	/* 0 */
+-/* 68 */	NdrFcShort( 0x9 ),	/* 9 */
+-#ifndef _ALPHA_
+-/* 70 */	NdrFcShort( 0xc ),	/* x86, MIPS, PPC Stack size/offset = 12 */
+-#else
+-			NdrFcShort( 0x18 ),	/* Alpha Stack size/offset = 24 */
+-#endif
+-/* 72 */	NdrFcShort( 0x8 ),	/* 8 */
+-/* 74 */	NdrFcShort( 0x8 ),	/* 8 */
+-/* 76 */	0x4,		/* Oi2 Flags:  has return, */
++/* 84 */	NdrFcLong( 0x0 ),	/* 0 */
++/* 88 */	NdrFcShort( 0x9 ),	/* 9 */
++/* 90 */	NdrFcShort( 0x18 ),	/* X64 Stack size/offset = 24 */
++/* 92 */	NdrFcShort( 0x8 ),	/* 8 */
++/* 94 */	NdrFcShort( 0x8 ),	/* 8 */
++/* 96 */	0x44,		/* Oi2 Flags:  has return, has ext, */
+ 			0x2,		/* 2 */
++/* 98 */	0xa,		/* 10 */
++			0x1,		/* Ext Flags:  new corr desc, */
++/* 100 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 102 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 104 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 106 */	NdrFcShort( 0x0 ),	/* 0 */
+ 
+ 	/* Parameter newVal */
+ 
+-/* 78 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+-#ifndef _ALPHA_
+-/* 80 */	NdrFcShort( 0x4 ),	/* x86, MIPS, PPC Stack size/offset = 4 */
+-#else
+-			NdrFcShort( 0x8 ),	/* Alpha Stack size/offset = 8 */
+-#endif
+-/* 82 */	0x8,		/* FC_LONG */
++/* 108 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
++/* 110 */	NdrFcShort( 0x8 ),	/* X64 Stack size/offset = 8 */
++/* 112 */	0x8,		/* FC_LONG */
+ 			0x0,		/* 0 */
+ 
+ 	/* Return value */
+ 
+-/* 84 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+-#ifndef _ALPHA_
+-/* 86 */	NdrFcShort( 0x8 ),	/* x86, MIPS, PPC Stack size/offset = 8 */
+-#else
+-			NdrFcShort( 0x10 ),	/* Alpha Stack size/offset = 16 */
+-#endif
+-/* 88 */	0x8,		/* FC_LONG */
++/* 114 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
++/* 116 */	NdrFcShort( 0x10 ),	/* X64 Stack size/offset = 16 */
++/* 118 */	0x8,		/* FC_LONG */
+ 			0x0,		/* 0 */
+ 
+ 	/* Procedure get_HTTPSprotocol */
+ 
+-/* 90 */	0x33,		/* FC_AUTO_HANDLE */
++/* 120 */	0x33,		/* FC_AUTO_HANDLE */
+ 			0x6c,		/* Old Flags:  object, Oi2 */
+-/* 92 */	NdrFcLong( 0x0 ),	/* 0 */
+-/* 96 */	NdrFcShort( 0xa ),	/* 10 */
+-#ifndef _ALPHA_
+-/* 98 */	NdrFcShort( 0xc ),	/* x86, MIPS, PPC Stack size/offset = 12 */
+-#else
+-			NdrFcShort( 0x18 ),	/* Alpha Stack size/offset = 24 */
+-#endif
+-/* 100 */	NdrFcShort( 0x0 ),	/* 0 */
+-/* 102 */	NdrFcShort( 0xe ),	/* 14 */
+-/* 104 */	0x4,		/* Oi2 Flags:  has return, */
++/* 122 */	NdrFcLong( 0x0 ),	/* 0 */
++/* 126 */	NdrFcShort( 0xa ),	/* 10 */
++/* 128 */	NdrFcShort( 0x18 ),	/* X64 Stack size/offset = 24 */
++/* 130 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 132 */	NdrFcShort( 0x22 ),	/* 34 */
++/* 134 */	0x44,		/* Oi2 Flags:  has return, has ext, */
+ 			0x2,		/* 2 */
++/* 136 */	0xa,		/* 10 */
++			0x1,		/* Ext Flags:  new corr desc, */
++/* 138 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 140 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 142 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 144 */	NdrFcShort( 0x0 ),	/* 0 */
+ 
+ 	/* Parameter pVal */
+ 
+-/* 106 */	NdrFcShort( 0x2150 ),	/* Flags:  out, base type, simple ref, srv alloc size=8 */
+-#ifndef _ALPHA_
+-/* 108 */	NdrFcShort( 0x4 ),	/* x86, MIPS, PPC Stack size/offset = 4 */
+-#else
+-			NdrFcShort( 0x8 ),	/* Alpha Stack size/offset = 8 */
+-#endif
+-/* 110 */	0x6,		/* FC_SHORT */
++/* 146 */	NdrFcShort( 0x2150 ),	/* Flags:  out, base type, simple ref, srv alloc size=8 */
++/* 148 */	NdrFcShort( 0x8 ),	/* X64 Stack size/offset = 8 */
++/* 150 */	0x6,		/* FC_SHORT */
+ 			0x0,		/* 0 */
+ 
+ 	/* Return value */
+ 
+-/* 112 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+-#ifndef _ALPHA_
+-/* 114 */	NdrFcShort( 0x8 ),	/* x86, MIPS, PPC Stack size/offset = 8 */
+-#else
+-			NdrFcShort( 0x10 ),	/* Alpha Stack size/offset = 16 */
+-#endif
+-/* 116 */	0x8,		/* FC_LONG */
++/* 152 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
++/* 154 */	NdrFcShort( 0x10 ),	/* X64 Stack size/offset = 16 */
++/* 156 */	0x8,		/* FC_LONG */
+ 			0x0,		/* 0 */
+ 
+ 	/* Procedure put_HTTPSprotocol */
+ 
+-/* 118 */	0x33,		/* FC_AUTO_HANDLE */
++/* 158 */	0x33,		/* FC_AUTO_HANDLE */
+ 			0x6c,		/* Old Flags:  object, Oi2 */
+-/* 120 */	NdrFcLong( 0x0 ),	/* 0 */
+-/* 124 */	NdrFcShort( 0xb ),	/* 11 */
+-#ifndef _ALPHA_
+-/* 126 */	NdrFcShort( 0xc ),	/* x86, MIPS, PPC Stack size/offset = 12 */
+-#else
+-			NdrFcShort( 0x18 ),	/* Alpha Stack size/offset = 24 */
+-#endif
+-/* 128 */	NdrFcShort( 0x6 ),	/* 6 */
+-/* 130 */	NdrFcShort( 0x8 ),	/* 8 */
+-/* 132 */	0x4,		/* Oi2 Flags:  has return, */
++/* 160 */	NdrFcLong( 0x0 ),	/* 0 */
++/* 164 */	NdrFcShort( 0xb ),	/* 11 */
++/* 166 */	NdrFcShort( 0x18 ),	/* X64 Stack size/offset = 24 */
++/* 168 */	NdrFcShort( 0x6 ),	/* 6 */
++/* 170 */	NdrFcShort( 0x8 ),	/* 8 */
++/* 172 */	0x44,		/* Oi2 Flags:  has return, has ext, */
+ 			0x2,		/* 2 */
++/* 174 */	0xa,		/* 10 */
++			0x1,		/* Ext Flags:  new corr desc, */
++/* 176 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 178 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 180 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 182 */	NdrFcShort( 0x0 ),	/* 0 */
+ 
+ 	/* Parameter newVal */
+ 
+-/* 134 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+-#ifndef _ALPHA_
+-/* 136 */	NdrFcShort( 0x4 ),	/* x86, MIPS, PPC Stack size/offset = 4 */
+-#else
+-			NdrFcShort( 0x8 ),	/* Alpha Stack size/offset = 8 */
+-#endif
+-/* 138 */	0x6,		/* FC_SHORT */
++/* 184 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
++/* 186 */	NdrFcShort( 0x8 ),	/* X64 Stack size/offset = 8 */
++/* 188 */	0x6,		/* FC_SHORT */
+ 			0x0,		/* 0 */
+ 
+ 	/* Return value */
+ 
+-/* 140 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+-#ifndef _ALPHA_
+-/* 142 */	NdrFcShort( 0x8 ),	/* x86, MIPS, PPC Stack size/offset = 8 */
+-#else
+-			NdrFcShort( 0x10 ),	/* Alpha Stack size/offset = 16 */
+-#endif
+-/* 144 */	0x8,		/* FC_LONG */
++/* 190 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
++/* 192 */	NdrFcShort( 0x10 ),	/* X64 Stack size/offset = 16 */
++/* 194 */	0x8,		/* FC_LONG */
+ 			0x0,		/* 0 */
+ 
+ 	/* Procedure get_HTTPprotocol */
+ 
+-/* 146 */	0x33,		/* FC_AUTO_HANDLE */
++/* 196 */	0x33,		/* FC_AUTO_HANDLE */
+ 			0x6c,		/* Old Flags:  object, Oi2 */
+-/* 148 */	NdrFcLong( 0x0 ),	/* 0 */
+-/* 152 */	NdrFcShort( 0xc ),	/* 12 */
+-#ifndef _ALPHA_
+-/* 154 */	NdrFcShort( 0xc ),	/* x86, MIPS, PPC Stack size/offset = 12 */
+-#else
+-			NdrFcShort( 0x18 ),	/* Alpha Stack size/offset = 24 */
+-#endif
+-/* 156 */	NdrFcShort( 0x0 ),	/* 0 */
+-/* 158 */	NdrFcShort( 0xe ),	/* 14 */
+-/* 160 */	0x4,		/* Oi2 Flags:  has return, */
++/* 198 */	NdrFcLong( 0x0 ),	/* 0 */
++/* 202 */	NdrFcShort( 0xc ),	/* 12 */
++/* 204 */	NdrFcShort( 0x18 ),	/* X64 Stack size/offset = 24 */
++/* 206 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 208 */	NdrFcShort( 0x22 ),	/* 34 */
++/* 210 */	0x44,		/* Oi2 Flags:  has return, has ext, */
+ 			0x2,		/* 2 */
++/* 212 */	0xa,		/* 10 */
++			0x1,		/* Ext Flags:  new corr desc, */
++/* 214 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 216 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 218 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 220 */	NdrFcShort( 0x0 ),	/* 0 */
+ 
+ 	/* Parameter pVal */
+ 
+-/* 162 */	NdrFcShort( 0x2150 ),	/* Flags:  out, base type, simple ref, srv alloc size=8 */
+-#ifndef _ALPHA_
+-/* 164 */	NdrFcShort( 0x4 ),	/* x86, MIPS, PPC Stack size/offset = 4 */
+-#else
+-			NdrFcShort( 0x8 ),	/* Alpha Stack size/offset = 8 */
+-#endif
+-/* 166 */	0x6,		/* FC_SHORT */
++/* 222 */	NdrFcShort( 0x2150 ),	/* Flags:  out, base type, simple ref, srv alloc size=8 */
++/* 224 */	NdrFcShort( 0x8 ),	/* X64 Stack size/offset = 8 */
++/* 226 */	0x6,		/* FC_SHORT */
+ 			0x0,		/* 0 */
+ 
+ 	/* Return value */
+ 
+-/* 168 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+-#ifndef _ALPHA_
+-/* 170 */	NdrFcShort( 0x8 ),	/* x86, MIPS, PPC Stack size/offset = 8 */
+-#else
+-			NdrFcShort( 0x10 ),	/* Alpha Stack size/offset = 16 */
+-#endif
+-/* 172 */	0x8,		/* FC_LONG */
++/* 228 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
++/* 230 */	NdrFcShort( 0x10 ),	/* X64 Stack size/offset = 16 */
++/* 232 */	0x8,		/* FC_LONG */
+ 			0x0,		/* 0 */
+ 
+ 	/* Procedure put_HTTPprotocol */
+ 
+-/* 174 */	0x33,		/* FC_AUTO_HANDLE */
++/* 234 */	0x33,		/* FC_AUTO_HANDLE */
+ 			0x6c,		/* Old Flags:  object, Oi2 */
+-/* 176 */	NdrFcLong( 0x0 ),	/* 0 */
+-/* 180 */	NdrFcShort( 0xd ),	/* 13 */
+-#ifndef _ALPHA_
+-/* 182 */	NdrFcShort( 0xc ),	/* x86, MIPS, PPC Stack size/offset = 12 */
+-#else
+-			NdrFcShort( 0x18 ),	/* Alpha Stack size/offset = 24 */
+-#endif
+-/* 184 */	NdrFcShort( 0x6 ),	/* 6 */
+-/* 186 */	NdrFcShort( 0x8 ),	/* 8 */
+-/* 188 */	0x4,		/* Oi2 Flags:  has return, */
++/* 236 */	NdrFcLong( 0x0 ),	/* 0 */
++/* 240 */	NdrFcShort( 0xd ),	/* 13 */
++/* 242 */	NdrFcShort( 0x18 ),	/* X64 Stack size/offset = 24 */
++/* 244 */	NdrFcShort( 0x6 ),	/* 6 */
++/* 246 */	NdrFcShort( 0x8 ),	/* 8 */
++/* 248 */	0x44,		/* Oi2 Flags:  has return, has ext, */
+ 			0x2,		/* 2 */
++/* 250 */	0xa,		/* 10 */
++			0x1,		/* Ext Flags:  new corr desc, */
++/* 252 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 254 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 256 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 258 */	NdrFcShort( 0x0 ),	/* 0 */
+ 
+ 	/* Parameter newVal */
+ 
+-/* 190 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+-#ifndef _ALPHA_
+-/* 192 */	NdrFcShort( 0x4 ),	/* x86, MIPS, PPC Stack size/offset = 4 */
+-#else
+-			NdrFcShort( 0x8 ),	/* Alpha Stack size/offset = 8 */
+-#endif
+-/* 194 */	0x6,		/* FC_SHORT */
++/* 260 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
++/* 262 */	NdrFcShort( 0x8 ),	/* X64 Stack size/offset = 8 */
++/* 264 */	0x6,		/* FC_SHORT */
+ 			0x0,		/* 0 */
+ 
+ 	/* Return value */
+ 
+-/* 196 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+-#ifndef _ALPHA_
+-/* 198 */	NdrFcShort( 0x8 ),	/* x86, MIPS, PPC Stack size/offset = 8 */
+-#else
+-			NdrFcShort( 0x10 ),	/* Alpha Stack size/offset = 16 */
+-#endif
+-/* 200 */	0x8,		/* FC_LONG */
++/* 266 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
++/* 268 */	NdrFcShort( 0x10 ),	/* X64 Stack size/offset = 16 */
++/* 270 */	0x8,		/* FC_LONG */
+ 			0x0,		/* 0 */
+ 
+ 	/* Procedure CancelFileDownload */
+ 
+-/* 202 */	0x33,		/* FC_AUTO_HANDLE */
++/* 272 */	0x33,		/* FC_AUTO_HANDLE */
+ 			0x6c,		/* Old Flags:  object, Oi2 */
+-/* 204 */	NdrFcLong( 0x0 ),	/* 0 */
+-/* 208 */	NdrFcShort( 0xe ),	/* 14 */
+-#ifndef _ALPHA_
+-/* 210 */	NdrFcShort( 0xc ),	/* x86, MIPS, PPC Stack size/offset = 12 */
+-#else
+-			NdrFcShort( 0x18 ),	/* Alpha Stack size/offset = 24 */
+-#endif
+-/* 212 */	NdrFcShort( 0x8 ),	/* 8 */
+-/* 214 */	NdrFcShort( 0x8 ),	/* 8 */
+-/* 216 */	0x4,		/* Oi2 Flags:  has return, */
++/* 274 */	NdrFcLong( 0x0 ),	/* 0 */
++/* 278 */	NdrFcShort( 0xe ),	/* 14 */
++/* 280 */	NdrFcShort( 0x18 ),	/* X64 Stack size/offset = 24 */
++/* 282 */	NdrFcShort( 0x8 ),	/* 8 */
++/* 284 */	NdrFcShort( 0x8 ),	/* 8 */
++/* 286 */	0x44,		/* Oi2 Flags:  has return, has ext, */
+ 			0x2,		/* 2 */
++/* 288 */	0xa,		/* 10 */
++			0x1,		/* Ext Flags:  new corr desc, */
++/* 290 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 292 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 294 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 296 */	NdrFcShort( 0x0 ),	/* 0 */
+ 
+ 	/* Parameter DlUid */
+ 
+-/* 218 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+-#ifndef _ALPHA_
+-/* 220 */	NdrFcShort( 0x4 ),	/* x86, MIPS, PPC Stack size/offset = 4 */
+-#else
+-			NdrFcShort( 0x8 ),	/* Alpha Stack size/offset = 8 */
+-#endif
+-/* 222 */	0x8,		/* FC_LONG */
++/* 298 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
++/* 300 */	NdrFcShort( 0x8 ),	/* X64 Stack size/offset = 8 */
++/* 302 */	0x8,		/* FC_LONG */
+ 			0x0,		/* 0 */
+ 
+ 	/* Return value */
+ 
+-/* 224 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+-#ifndef _ALPHA_
+-/* 226 */	NdrFcShort( 0x8 ),	/* x86, MIPS, PPC Stack size/offset = 8 */
+-#else
+-			NdrFcShort( 0x10 ),	/* Alpha Stack size/offset = 16 */
+-#endif
+-/* 228 */	0x8,		/* FC_LONG */
++/* 304 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
++/* 306 */	NdrFcShort( 0x10 ),	/* X64 Stack size/offset = 16 */
++/* 308 */	0x8,		/* FC_LONG */
+ 			0x0,		/* 0 */
+ 
+ 	/* Procedure SetupWindowsHook */
+ 
+-/* 230 */	0x33,		/* FC_AUTO_HANDLE */
++/* 310 */	0x33,		/* FC_AUTO_HANDLE */
+ 			0x6c,		/* Old Flags:  object, Oi2 */
+-/* 232 */	NdrFcLong( 0x0 ),	/* 0 */
+-/* 236 */	NdrFcShort( 0xf ),	/* 15 */
+-#ifndef _ALPHA_
+-/* 238 */	NdrFcShort( 0x18 ),	/* x86, MIPS, PPC Stack size/offset = 24 */
+-#else
+-			NdrFcShort( 0x30 ),	/* Alpha Stack size/offset = 48 */
+-#endif
+-/* 240 */	NdrFcShort( 0x1c ),	/* 28 */
+-/* 242 */	NdrFcShort( 0x10 ),	/* 16 */
+-/* 244 */	0x4,		/* Oi2 Flags:  has return, */
++/* 312 */	NdrFcLong( 0x0 ),	/* 0 */
++/* 316 */	NdrFcShort( 0xf ),	/* 15 */
++/* 318 */	NdrFcShort( 0x30 ),	/* X64 Stack size/offset = 48 */
++/* 320 */	NdrFcShort( 0x30 ),	/* 48 */
++/* 322 */	NdrFcShort( 0x24 ),	/* 36 */
++/* 324 */	0x44,		/* Oi2 Flags:  has return, has ext, */
+ 			0x5,		/* 5 */
++/* 326 */	0xa,		/* 10 */
++			0x1,		/* Ext Flags:  new corr desc, */
++/* 328 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 330 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 332 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 334 */	NdrFcShort( 0x0 ),	/* 0 */
+ 
+ 	/* Parameter lHookType */
+ 
+-/* 246 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+-#ifndef _ALPHA_
+-/* 248 */	NdrFcShort( 0x4 ),	/* x86, MIPS, PPC Stack size/offset = 4 */
+-#else
+-			NdrFcShort( 0x8 ),	/* Alpha Stack size/offset = 8 */
+-#endif
+-/* 250 */	0xd,		/* FC_ENUM16 */
++/* 336 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
++/* 338 */	NdrFcShort( 0x8 ),	/* X64 Stack size/offset = 8 */
++/* 340 */	0xd,		/* FC_ENUM16 */
+ 			0x0,		/* 0 */
+ 
+ 	/* Parameter hwndTargetWnd */
+ 
+-/* 252 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+-#ifndef _ALPHA_
+-/* 254 */	NdrFcShort( 0x8 ),	/* x86, MIPS, PPC Stack size/offset = 8 */
+-#else
+-			NdrFcShort( 0x10 ),	/* Alpha Stack size/offset = 16 */
+-#endif
+-/* 256 */	0x8,		/* FC_LONG */
++/* 342 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
++/* 344 */	NdrFcShort( 0x10 ),	/* X64 Stack size/offset = 16 */
++/* 346 */	0x8,		/* FC_LONG */
+ 			0x0,		/* 0 */
+ 
+ 	/* Parameter bStart */
+ 
+-/* 258 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+-#ifndef _ALPHA_
+-/* 260 */	NdrFcShort( 0xc ),	/* x86, MIPS, PPC Stack size/offset = 12 */
+-#else
+-			NdrFcShort( 0x18 ),	/* Alpha Stack size/offset = 24 */
+-#endif
+-/* 262 */	0x6,		/* FC_SHORT */
++/* 348 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
++/* 350 */	NdrFcShort( 0x18 ),	/* X64 Stack size/offset = 24 */
++/* 352 */	0x6,		/* FC_SHORT */
+ 			0x0,		/* 0 */
+ 
+ 	/* Parameter lUWMHookMsgID */
+ 
+-/* 264 */	NdrFcShort( 0x158 ),	/* Flags:  in, out, base type, simple ref, */
+-#ifndef _ALPHA_
+-/* 266 */	NdrFcShort( 0x10 ),	/* x86, MIPS, PPC Stack size/offset = 16 */
+-#else
+-			NdrFcShort( 0x20 ),	/* Alpha Stack size/offset = 32 */
+-#endif
+-/* 268 */	0x8,		/* FC_LONG */
++/* 354 */	NdrFcShort( 0x158 ),	/* Flags:  in, out, base type, simple ref, */
++/* 356 */	NdrFcShort( 0x20 ),	/* X64 Stack size/offset = 32 */
++/* 358 */	0x8,		/* FC_LONG */
+ 			0x0,		/* 0 */
+ 
+ 	/* Return value */
+ 
+-/* 270 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+-#ifndef _ALPHA_
+-/* 272 */	NdrFcShort( 0x14 ),	/* x86, MIPS, PPC Stack size/offset = 20 */
+-#else
+-			NdrFcShort( 0x28 ),	/* Alpha Stack size/offset = 40 */
+-#endif
+-/* 274 */	0x8,		/* FC_LONG */
++/* 360 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
++/* 362 */	NdrFcShort( 0x28 ),	/* X64 Stack size/offset = 40 */
++/* 364 */	0x8,		/* FC_LONG */
+ 			0x0,		/* 0 */
+ 
+ 	/* Procedure HookProcNCode */
+ 
+-/* 276 */	0x33,		/* FC_AUTO_HANDLE */
++/* 366 */	0x33,		/* FC_AUTO_HANDLE */
+ 			0x6c,		/* Old Flags:  object, Oi2 */
+-/* 278 */	NdrFcLong( 0x0 ),	/* 0 */
+-/* 282 */	NdrFcShort( 0x10 ),	/* 16 */
+-#ifndef _ALPHA_
+-/* 284 */	NdrFcShort( 0x10 ),	/* x86, MIPS, PPC Stack size/offset = 16 */
+-#else
+-			NdrFcShort( 0x20 ),	/* Alpha Stack size/offset = 32 */
+-#endif
+-/* 286 */	NdrFcShort( 0xe ),	/* 14 */
+-/* 288 */	NdrFcShort( 0x10 ),	/* 16 */
+-/* 290 */	0x4,		/* Oi2 Flags:  has return, */
++/* 368 */	NdrFcLong( 0x0 ),	/* 0 */
++/* 372 */	NdrFcShort( 0x10 ),	/* 16 */
++/* 374 */	NdrFcShort( 0x20 ),	/* X64 Stack size/offset = 32 */
++/* 376 */	NdrFcShort( 0x22 ),	/* 34 */
++/* 378 */	NdrFcShort( 0x24 ),	/* 36 */
++/* 380 */	0x44,		/* Oi2 Flags:  has return, has ext, */
+ 			0x3,		/* 3 */
++/* 382 */	0xa,		/* 10 */
++			0x1,		/* Ext Flags:  new corr desc, */
++/* 384 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 386 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 388 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 390 */	NdrFcShort( 0x0 ),	/* 0 */
+ 
+ 	/* Parameter lHookType */
+ 
+-/* 292 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+-#ifndef _ALPHA_
+-/* 294 */	NdrFcShort( 0x4 ),	/* x86, MIPS, PPC Stack size/offset = 4 */
+-#else
+-			NdrFcShort( 0x8 ),	/* Alpha Stack size/offset = 8 */
+-#endif
+-/* 296 */	0xd,		/* FC_ENUM16 */
++/* 392 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
++/* 394 */	NdrFcShort( 0x8 ),	/* X64 Stack size/offset = 8 */
++/* 396 */	0xd,		/* FC_ENUM16 */
+ 			0x0,		/* 0 */
+ 
+ 	/* Parameter nCode */
+ 
+-/* 298 */	NdrFcShort( 0x158 ),	/* Flags:  in, out, base type, simple ref, */
+-#ifndef _ALPHA_
+-/* 300 */	NdrFcShort( 0x8 ),	/* x86, MIPS, PPC Stack size/offset = 8 */
+-#else
+-			NdrFcShort( 0x10 ),	/* Alpha Stack size/offset = 16 */
+-#endif
+-/* 302 */	0x8,		/* FC_LONG */
++/* 398 */	NdrFcShort( 0x158 ),	/* Flags:  in, out, base type, simple ref, */
++/* 400 */	NdrFcShort( 0x10 ),	/* X64 Stack size/offset = 16 */
++/* 402 */	0x8,		/* FC_LONG */
+ 			0x0,		/* 0 */
+ 
+ 	/* Return value */
+ 
+-/* 304 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+-#ifndef _ALPHA_
+-/* 306 */	NdrFcShort( 0xc ),	/* x86, MIPS, PPC Stack size/offset = 12 */
+-#else
+-			NdrFcShort( 0x18 ),	/* Alpha Stack size/offset = 24 */
+-#endif
+-/* 308 */	0x8,		/* FC_LONG */
++/* 404 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
++/* 406 */	NdrFcShort( 0x18 ),	/* X64 Stack size/offset = 24 */
++/* 408 */	0x8,		/* FC_LONG */
+ 			0x0,		/* 0 */
+ 
+ 			0x0
+@@ -660,7 +456,7 @@
+         }
+     };
+ 
+-static const MIDL_TYPE_FORMAT_STRING __MIDL_TypeFormatString =
++static const csExWBDLMan_MIDL_TYPE_FORMAT_STRING csExWBDLMan__MIDL_TypeFormatString =
+     {
+         0,
+         {
+@@ -667,7 +463,7 @@
+ 			NdrFcShort( 0x0 ),	/* 0 */
+ /*  2 */	
+ 			0x12, 0x0,	/* FC_UP */
+-/*  4 */	NdrFcShort( 0xc ),	/* Offset= 12 (16) */
++/*  4 */	NdrFcShort( 0xe ),	/* Offset= 14 (18) */
+ /*  6 */	
+ 			0x1b,		/* FC_CARRAY */
+ 			0x1,		/* 1 */
+@@ -675,34 +471,35 @@
+ /* 10 */	0x9,		/* Corr desc: FC_ULONG */
+ 			0x0,		/*  */
+ /* 12 */	NdrFcShort( 0xfffc ),	/* -4 */
+-/* 14 */	0x6,		/* FC_SHORT */
++/* 14 */	NdrFcShort( 0x1 ),	/* Corr flags:  early, */
++/* 16 */	0x6,		/* FC_SHORT */
+ 			0x5b,		/* FC_END */
+-/* 16 */	
++/* 18 */	
+ 			0x17,		/* FC_CSTRUCT */
+ 			0x3,		/* 3 */
+-/* 18 */	NdrFcShort( 0x8 ),	/* 8 */
+-/* 20 */	NdrFcShort( 0xfffffff2 ),	/* Offset= -14 (6) */
+-/* 22 */	0x8,		/* FC_LONG */
++/* 20 */	NdrFcShort( 0x8 ),	/* 8 */
++/* 22 */	NdrFcShort( 0xfff0 ),	/* Offset= -16 (6) */
++/* 24 */	0x8,		/* FC_LONG */
+ 			0x8,		/* FC_LONG */
+-/* 24 */	0x5c,		/* FC_PAD */
++/* 26 */	0x5c,		/* FC_PAD */
+ 			0x5b,		/* FC_END */
+-/* 26 */	0xb4,		/* FC_USER_MARSHAL */
++/* 28 */	0xb4,		/* FC_USER_MARSHAL */
+ 			0x83,		/* 131 */
+-/* 28 */	NdrFcShort( 0x0 ),	/* 0 */
+-/* 30 */	NdrFcShort( 0x4 ),	/* 4 */
+-/* 32 */	NdrFcShort( 0x0 ),	/* 0 */
+-/* 34 */	NdrFcShort( 0xffffffe0 ),	/* Offset= -32 (2) */
+-/* 36 */	
++/* 30 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 32 */	NdrFcShort( 0x8 ),	/* 8 */
++/* 34 */	NdrFcShort( 0x0 ),	/* 0 */
++/* 36 */	NdrFcShort( 0xffde ),	/* Offset= -34 (2) */
++/* 38 */	
+ 			0x11, 0x8,	/* FC_RP [simple_pointer] */
+-/* 38 */	0x8,		/* FC_LONG */
++/* 40 */	0x8,		/* FC_LONG */
+ 			0x5c,		/* FC_PAD */
+-/* 40 */	
++/* 42 */	
+ 			0x11, 0xc,	/* FC_RP [alloced_on_stack] [simple_pointer] */
+-/* 42 */	0x8,		/* FC_LONG */
++/* 44 */	0x8,		/* FC_LONG */
+ 			0x5c,		/* FC_PAD */
+-/* 44 */	
++/* 46 */	
+ 			0x11, 0xc,	/* FC_RP [alloced_on_stack] [simple_pointer] */
+-/* 46 */	0x6,		/* FC_SHORT */
++/* 48 */	0x6,		/* FC_SHORT */
+ 			0x5c,		/* FC_PAD */
+ 
+ 			0x0
+@@ -709,13 +506,161 @@
+         }
+     };
+ 
+-const CInterfaceProxyVtbl * _csExWBDLMan_ProxyVtblList[] = 
++static const USER_MARSHAL_ROUTINE_QUADRUPLE UserMarshalRoutines[ WIRE_MARSHAL_TABLE_SIZE ] = 
++        {
++            
++            {
++            BSTR_UserSize
++            ,BSTR_UserMarshal
++            ,BSTR_UserUnmarshal
++            ,BSTR_UserFree
++            }
++
++        };
++
++
++
++/* Object interface: IUnknown, ver. 0.0,
++   GUID={0x00000000,0x0000,0x0000,{0xC0,0x00,0x00,0x00,0x00,0x00,0x00,0x46}} */
++
++
++/* Object interface: IDownloadManager, ver. 0.0,
++   GUID={0x988934A4,0x064B,0x11D3,{0xBB,0x80,0x00,0x10,0x4B,0x35,0xE7,0xF9}} */
++
++
++/* Standard interface: __MIDL_itf_csExWBDLMan_0000_0001, ver. 0.0,
++   GUID={0x00000000,0x0000,0x0000,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}} */
++
++
++/* Object interface: IDispatch, ver. 0.0,
++   GUID={0x00020400,0x0000,0x0000,{0xC0,0x00,0x00,0x00,0x00,0x00,0x00,0x46}} */
++
++
++/* Object interface: IcsDLMan, ver. 0.0,
++   GUID={0x5E0CF8CC,0x2057,0x4566,{0xB5,0xF6,0x9A,0xE8,0x17,0xE3,0xFB,0x0A}} */
++
++#pragma code_seg(".orpc")
++static const unsigned short IcsDLMan_FormatStringOffsetTable[] =
++    {
++    (unsigned short) -1,
++    (unsigned short) -1,
++    (unsigned short) -1,
++    (unsigned short) -1,
++    0,
++    44,
++    82,
++    120,
++    158,
++    196,
++    234,
++    272,
++    310,
++    366
++    };
++
++static const MIDL_STUBLESS_PROXY_INFO IcsDLMan_ProxyInfo =
++    {
++    &Object_StubDesc,
++    csExWBDLMan__MIDL_ProcFormatString.Format,
++    &IcsDLMan_FormatStringOffsetTable[-3],
++    0,
++    0,
++    0
++    };
++
++
++static const MIDL_SERVER_INFO IcsDLMan_ServerInfo = 
++    {
++    &Object_StubDesc,
++    0,
++    csExWBDLMan__MIDL_ProcFormatString.Format,
++    &IcsDLMan_FormatStringOffsetTable[-3],
++    0,
++    0,
++    0,
++    0};
++CINTERFACE_PROXY_VTABLE(17) _IcsDLManProxyVtbl = 
+ {
++    &IcsDLMan_ProxyInfo,
++    &IID_IcsDLMan,
++    IUnknown_QueryInterface_Proxy,
++    IUnknown_AddRef_Proxy,
++    IUnknown_Release_Proxy ,
++    0 /* IDispatch::GetTypeInfoCount */ ,
++    0 /* IDispatch::GetTypeInfo */ ,
++    0 /* IDispatch::GetIDsOfNames */ ,
++    0 /* IDispatch_Invoke_Proxy */ ,
++    (void *) (INT_PTR) -1 /* IcsDLMan::DownloadUrlAsync */ ,
++    (void *) (INT_PTR) -1 /* IcsDLMan::get_HWNDInternetExplorerServer */ ,
++    (void *) (INT_PTR) -1 /* IcsDLMan::put_HWNDInternetExplorerServer */ ,
++    (void *) (INT_PTR) -1 /* IcsDLMan::get_HTTPSprotocol */ ,
++    (void *) (INT_PTR) -1 /* IcsDLMan::put_HTTPSprotocol */ ,
++    (void *) (INT_PTR) -1 /* IcsDLMan::get_HTTPprotocol */ ,
++    (void *) (INT_PTR) -1 /* IcsDLMan::put_HTTPprotocol */ ,
++    (void *) (INT_PTR) -1 /* IcsDLMan::CancelFileDownload */ ,
++    (void *) (INT_PTR) -1 /* IcsDLMan::SetupWindowsHook */ ,
++    (void *) (INT_PTR) -1 /* IcsDLMan::HookProcNCode */
++};
++
++
++static const PRPC_STUB_FUNCTION IcsDLMan_table[] =
++{
++    STUB_FORWARDING_FUNCTION,
++    STUB_FORWARDING_FUNCTION,
++    STUB_FORWARDING_FUNCTION,
++    STUB_FORWARDING_FUNCTION,
++    NdrStubCall2,
++    NdrStubCall2,
++    NdrStubCall2,
++    NdrStubCall2,
++    NdrStubCall2,
++    NdrStubCall2,
++    NdrStubCall2,
++    NdrStubCall2,
++    NdrStubCall2,
++    NdrStubCall2
++};
++
++CInterfaceStubVtbl _IcsDLManStubVtbl =
++{
++    &IID_IcsDLMan,
++    &IcsDLMan_ServerInfo,
++    17,
++    &IcsDLMan_table[-3],
++    CStdStubBuffer_DELEGATING_METHODS
++};
++
++static const MIDL_STUB_DESC Object_StubDesc = 
++    {
++    0,
++    NdrOleAllocate,
++    NdrOleFree,
++    0,
++    0,
++    0,
++    0,
++    0,
++    csExWBDLMan__MIDL_TypeFormatString.Format,
++    1, /* -error bounds_check flag */
++    0x50002, /* Ndr library version */
++    0,
++    0x800025b, /* MIDL Version 8.0.603 */
++    0,
++    UserMarshalRoutines,
++    0,  /* notify & notify_flag routine table */
++    0x1, /* MIDL flag */
++    0, /* cs routines */
++    0,   /* proxy/server info */
++    0
++    };
++
++const CInterfaceProxyVtbl * const _csExWBDLMan_ProxyVtblList[] = 
++{
+     ( CInterfaceProxyVtbl *) &_IcsDLManProxyVtbl,
+     0
+ };
+ 
+-const CInterfaceStubVtbl * _csExWBDLMan_StubVtblList[] = 
++const CInterfaceStubVtbl * const _csExWBDLMan_StubVtblList[] = 
+ {
+     ( CInterfaceStubVtbl *) &_IcsDLManStubVtbl,
+     0
+@@ -727,7 +672,7 @@
+     0
+ };
+ 
+-const IID *  _csExWBDLMan_BaseIIDList[] = 
++const IID *  const _csExWBDLMan_BaseIIDList[] = 
+ {
+     &IID_IDispatch,
+     0
+@@ -762,3 +707,10 @@
+     0, /* Filler2 */
+     0  /* Filler3 */
+ };
++#if _MSC_VER >= 1200
++#pragma warning(pop)
++#endif
++
++
++#endif /* defined(_M_AMD64)*/
++
+Index: COM_Component_Src/ProtocolImpl.h
+===================================================================
+--- COM_Component_Src/ProtocolImpl.h	(revision 71)
++++ COM_Component_Src/ProtocolImpl.h	(working copy)
+@@ -80,9 +80,9 @@
+ struct QIPassthrough
+ {
+ 	static HRESULT WINAPI QueryInterfacePassthroughT(void* pv, REFIID riid,
+-		LPVOID* ppv, DWORD dw);
++		LPVOID* ppv, DWORD_PTR dw);
+ 	static HRESULT WINAPI QueryInterfaceDebugT(void* pv, REFIID riid,
+-		LPVOID* ppv, DWORD dw);
++		LPVOID* ppv, DWORD_PTR dw);
+ };
+ 
+ HRESULT WINAPI QueryInterfacePassthrough(void* pv, REFIID riid,
+Index: COM_Component_Src/ProtocolImpl.inl
+===================================================================
+--- COM_Component_Src/ProtocolImpl.inl	(revision 71)
++++ COM_Component_Src/ProtocolImpl.inl	(working copy)
+@@ -17,7 +17,7 @@
+ 
+ template <class T>
+ inline HRESULT WINAPI QIPassthrough<T>::
+-	QueryInterfacePassthroughT(void* pv, REFIID riid, LPVOID* ppv, DWORD dw)
++	QueryInterfacePassthroughT(void* pv, REFIID riid, LPVOID* ppv, DWORD_PTR dw)
+ {
+ 	ATLASSERT(pv != 0);
+ 	T* pT = static_cast<T*>(pv);
+@@ -39,7 +39,7 @@
+ 
+ template <class T>
+ inline HRESULT WINAPI QIPassthrough<T>::
+-	QueryInterfaceDebugT(void* pv, REFIID riid, LPVOID* ppv, DWORD dw)
++	QueryInterfaceDebugT(void* pv, REFIID riid, LPVOID* ppv, DWORD_PTR dw)
+ {
+ 	ATLASSERT(pv != 0);
+ 	T* pT = static_cast<T*>(pv);
+Index: csExWB.csproj
+===================================================================
+--- csExWB.csproj	(revision 71)
++++ csExWB.csproj	(working copy)
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+   <PropertyGroup>
+     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+@@ -15,6 +15,27 @@
+     <ApplicationIcon>
+     </ApplicationIcon>
+     <SignAssembly>false</SignAssembly>
++    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
++    <FileUpgradeFlags>
++    </FileUpgradeFlags>
++    <UpgradeBackupLocation>
++    </UpgradeBackupLocation>
++    <OldToolsVersion>2.0</OldToolsVersion>
++    <PublishUrl>publish\</PublishUrl>
++    <Install>true</Install>
++    <InstallFrom>Disk</InstallFrom>
++    <UpdateEnabled>false</UpdateEnabled>
++    <UpdateMode>Foreground</UpdateMode>
++    <UpdateInterval>7</UpdateInterval>
++    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
++    <UpdatePeriodically>false</UpdatePeriodically>
++    <UpdateRequired>false</UpdateRequired>
++    <MapFileExtensions>true</MapFileExtensions>
++    <ApplicationRevision>0</ApplicationRevision>
++    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
++    <IsWebBootstrapper>false</IsWebBootstrapper>
++    <UseApplicationTrust>false</UseApplicationTrust>
++    <BootstrapperEnabled>true</BootstrapperEnabled>
+   </PropertyGroup>
+   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+     <DebugSymbols>true</DebugSymbols>
+@@ -27,6 +48,7 @@
+     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+     <DocumentationFile>
+     </DocumentationFile>
++    <PlatformTarget>AnyCPU</PlatformTarget>
+   </PropertyGroup>
+   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+     <DebugType>pdbonly</DebugType>
+@@ -236,6 +258,21 @@
+     <Compile Include="General_Classes\WindowsMessages.cs" />
+   </ItemGroup>
+   <ItemGroup>
++    <Content Include="HTML_Interfaces\AConversionRules.txt" />
++  </ItemGroup>
++  <ItemGroup>
++    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
++      <Visible>False</Visible>
++      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
++      <Install>false</Install>
++    </BootstrapperPackage>
++    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
++      <Visible>False</Visible>
++      <ProductName>.NET Framework 3.5 SP1</ProductName>
++      <Install>true</Install>
++    </BootstrapperPackage>
++  </ItemGroup>
++  <ItemGroup>
+     <COMReference Include="CSEXWBDLMANLib">
+       <Guid>{8F81BC06-C252-4437-92EC-E343AFBAA03A}</Guid>
+       <VersionMajor>1</VersionMajor>
+@@ -243,9 +280,7 @@
+       <Lcid>0</Lcid>
+       <WrapperTool>tlbimp</WrapperTool>
+       <Isolated>False</Isolated>
++      <EmbedInteropTypes>True</EmbedInteropTypes>
+     </COMReference>
+   </ItemGroup>
+-  <ItemGroup>
+-    <Content Include="HTML_Interfaces\AConversionRules.txt" />
+-  </ItemGroup>
+ </Project>
+\ No newline at end of file
+Index: csExWB.csproj.user
+===================================================================
+--- csExWB.csproj.user	(revision 71)
++++ csExWB.csproj.user	(working copy)
+@@ -1,5 +1,14 @@
+-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++﻿<?xml version="1.0" encoding="utf-8"?>
++<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+   <PropertyGroup>
+     <ProjectView>ProjectFiles</ProjectView>
++    <PublishUrlHistory />
++    <InstallUrlHistory />
++    <SupportUrlHistory />
++    <UpdateUrlHistory />
++    <BootstrapperUrlHistory />
++    <ErrorReportUrlHistory />
++    <FallbackCulture>en-US</FallbackCulture>
++    <VerifyUploadedFiles>false</VerifyUploadedFiles>
+   </PropertyGroup>
+ </Project>
+\ No newline at end of file
+Index: DemoApp/DemoApp.csproj
+===================================================================
+--- DemoApp/DemoApp.csproj	(revision 71)
++++ DemoApp/DemoApp.csproj	(working copy)
+@@ -1,4 +1,5 @@
+-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++﻿<?xml version="1.0" encoding="utf-8"?>
++<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+   <PropertyGroup>
+     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+@@ -10,6 +11,13 @@
+     <RootNamespace>DemoApp</RootNamespace>
+     <AssemblyName>DemoApp</AssemblyName>
+     <ApplicationIcon>App.ICO</ApplicationIcon>
++    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
++    <FileUpgradeFlags>
++    </FileUpgradeFlags>
++    <UpgradeBackupLocation>
++    </UpgradeBackupLocation>
++    <OldToolsVersion>2.0</OldToolsVersion>
++    <ApplicationRevision>0</ApplicationRevision>
+   </PropertyGroup>
+   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+     <DebugSymbols>true</DebugSymbols>
+@@ -19,6 +27,7 @@
+     <DefineConstants>DEBUG;TRACE</DefineConstants>
+     <ErrorReport>prompt</ErrorReport>
+     <WarningLevel>4</WarningLevel>
++    <PlatformTarget>AnyCPU</PlatformTarget>
+   </PropertyGroup>
+   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+     <DebugType>pdbonly</DebugType>
+@@ -213,7 +222,7 @@
+     <Compile Include="WinExternal.cs" />
+   </ItemGroup>
+   <ItemGroup>
+-    <ProjectReference Include="..\csExWB\csExWB.csproj">
++    <ProjectReference Include="..\csExWB.csproj">
+       <Project>{E8E8BB5D-3302-4763-94F2-A8A238F7D6EA}</Project>
+       <Name>csExWB</Name>
+     </ProjectReference>
+Index: DemoApp/DemoApp.csproj.user
+===================================================================
+--- DemoApp/DemoApp.csproj.user	(revision 71)
++++ DemoApp/DemoApp.csproj.user	(working copy)
+@@ -1,4 +1,5 @@
+-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++﻿<?xml version="1.0" encoding="utf-8"?>
++<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+   <PropertyGroup>
+     <PublishUrlHistory>publish\</PublishUrlHistory>
+     <InstallUrlHistory>
+@@ -9,7 +10,6 @@
+     </UpdateUrlHistory>
+     <BootstrapperUrlHistory>
+     </BootstrapperUrlHistory>
+-    <ApplicationRevision>0</ApplicationRevision>
+     <FallbackCulture>en-US</FallbackCulture>
+     <VerifyUploadedFiles>false</VerifyUploadedFiles>
+   </PropertyGroup>
+Index: DemoApp/Properties/Resources.Designer.cs
+===================================================================
+--- DemoApp/Properties/Resources.Designer.cs	(revision 71)
++++ DemoApp/Properties/Resources.Designer.cs	(working copy)
+@@ -1,7 +1,7 @@
+ ﻿//------------------------------------------------------------------------------
+ // <auto-generated>
+ //     This code was generated by a tool.
+-//     Runtime Version:2.0.50727.42
++//     Runtime Version:4.0.30319.18444
+ //
+ //     Changes to this file may cause incorrect behavior and will be lost if
+ //     the code is regenerated.
+@@ -19,7 +19,7 @@
+     // class via a tool like ResGen or Visual Studio.
+     // To add or remove a member, edit your .ResX file then rerun ResGen
+     // with the /str option, or rebuild your VS project.
+-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "2.0.0.0")]
++    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+     internal class Resources {
+@@ -60,6 +60,9 @@
+             }
+         }
+         
++        /// <summary>
++        ///   Looks up a localized resource of type System.Drawing.Bitmap.
++        /// </summary>
+         internal static System.Drawing.Bitmap blank {
+             get {
+                 object obj = ResourceManager.GetObject("blank", resourceCulture);
+@@ -67,6 +70,9 @@
+             }
+         }
+         
++        /// <summary>
++        ///   Looks up a localized resource of type System.Drawing.Bitmap.
++        /// </summary>
+         internal static System.Drawing.Bitmap ietoolbar {
+             get {
+                 object obj = ResourceManager.GetObject("ietoolbar", resourceCulture);
+Index: DemoApp/Properties/Settings.Designer.cs
+===================================================================
+--- DemoApp/Properties/Settings.Designer.cs	(revision 71)
++++ DemoApp/Properties/Settings.Designer.cs	(working copy)
+@@ -1,7 +1,7 @@
+ ﻿//------------------------------------------------------------------------------
+ // <auto-generated>
+ //     This code was generated by a tool.
+-//     Runtime Version:2.0.50727.42
++//     Runtime Version:4.0.30319.18444
+ //
+ //     Changes to this file may cause incorrect behavior and will be lost if
+ //     the code is regenerated.
+@@ -12,7 +12,7 @@
+     
+     
+     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "8.0.0.0")]
++    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "12.0.0.0")]
+     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+         
+         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));

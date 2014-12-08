@@ -1,0 +1,18 @@
+/DemoApp/obj/Debug/*.Cache
+/obj/Debug
+/obj/Release
+/COM_Component_Src/*.def
+/DemoApp/*.user
+/COM_Component_Src/x64/Release MinDependency/csExWBDLMan.tlog/*.tlog
+/COM_Component_Src/x64/Debug/csExWBDLMan.tlog/*.tlog
+*.tlog
+*.suo
+Debug
+*.sdf
+*.obj
+*.log
+*.pdb
+*.ipch
+*.pch
+*.user
+*.exe

@@ -1,0 +1,133 @@
+// csExWBDLMan.idl : IDL source for csExWBDLMan.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (csExWBDLMan.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+
+//-------------------------------------------------------------------------
+//
+//  IDownloadManager
+//
+//-------------------------------------------------------------------------
+//	interface IDownloadManager;
+	[
+		helpstring("IDownloadManager interface"),
+		object,
+		uuid(988934A4-064B-11D3-BB80-00104B35E7F9), // IID_IDownloadManager
+		pointer_default(unique),
+		local
+	]
+	interface IDownloadManager : IUnknown
+	{
+		HRESULT Download(
+			[in] IMoniker *pmk,         // Identifies the object to be downloaded
+			[in] IBindCtx *pbc,         // Stores information used by the moniker to bind 
+			[in] DWORD dwBindVerb,      // The action to be performed during the bind
+			[in] LONG grfBINDF,         // Determines the use of URL encoding during the bind
+			[in] BINDINFO *pBindInfo,   // Used to implement IBindStatusCallback::GetBindInfo
+			[in] LPCOLESTR pszHeaders,  // Additional headers to use with IHttpNegotiate
+			[in] LPCOLESTR pszRedir,    // The URL that the moniker is redirected to
+			[in] UINT uiCP              // The code page of the object's display name
+		);
+	};
+
+
+	typedef enum WINDOWSHOOK_TYPES
+	{
+		WHT_CALLWNDPROC		= 0,
+		WHT_CBT				= 1,
+		WHT_GETMESSAGE		= 2,
+		WHT_KEYBOARD		= 3,
+		WHT_MOUSE			= 4,
+		WHT_MSGFILTER		= 5,
+		WHT_KEYBOARD_LL		= 6,
+		WHT_MOUSE_LL		= 7,
+		WHT_FOREGROUNDIDLE	= 8,
+		WHT_CALLWNDPROCRET	= 9,
+		WHT_SYSMSGFILTER	= 10,
+		WHT_SHELL			= 11
+	}WINDOWSHOOK_TYPES;
+
+
+	[
+		object,
+		uuid(5E0CF8CC-2057-4566-B5F6-9AE817E3FB0A),
+		dual,
+		helpstring("IcsDLMan Interface"),
+		pointer_default(unique)
+	]
+	interface IcsDLMan : IDispatch
+	{
+		[id(1), helpstring("method DownloadUrlAsync")] HRESULT DownloadUrlAsync([in] BSTR URL, [in, out] long *DLUID);
+		[propget, id(2), helpstring("property HWNDInternetExplorerServer")] HRESULT HWNDInternetExplorerServer([out, retval] long *pVal);
+		[propput, id(2), helpstring("property HWNDInternetExplorerServer")] HRESULT HWNDInternetExplorerServer([in] long newVal);
+		[propget, id(3), helpstring("property HTTPSprotocol")] HRESULT HTTPSprotocol([out, retval] VARIANT_BOOL *pVal);
+		[propput, id(3), helpstring("property HTTPSprotocol")] HRESULT HTTPSprotocol([in] VARIANT_BOOL newVal);
+		[propget, id(4), helpstring("property HTTPprotocol")] HRESULT HTTPprotocol([out, retval] VARIANT_BOOL *pVal);
+		[propput, id(4), helpstring("property HTTPprotocol")] HRESULT HTTPprotocol([in] VARIANT_BOOL newVal);
+		[id(5), helpstring("method CancelFileDownload")] HRESULT CancelFileDownload([in] long DlUid);
+		[id(6), helpstring("Start or stop a windows hook. Notifications are send via SendMessageTimeOut.")] HRESULT SetupWindowsHook([in] WINDOWSHOOK_TYPES lHookType,[in] long hwndTargetWnd, [in] VARIANT_BOOL bStart, [in,out] long *lUWMHookMsgID);
+		[id(7), helpstring("Returns nCode for CBT, MSGFILTER, and SYSMSGFILTER hook process.")] HRESULT HookProcNCode([in] WINDOWSHOOK_TYPES lHookType, [in,out] long *nCode);
+	};
+
+[
+	uuid(8F81BC06-C252-4437-92EC-E343AFBAA03A),
+	version(1.0),
+	helpstring("csExWBDLMan 1.0")
+]
+library CSEXWBDLMANLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(AD7128D1-B6B9-4F0F-A021-5F2486CCBCC3),
+		helpstring("_IcsDLManEvents Interface")
+	]
+	dispinterface _IcsDLManEvents
+	{
+		properties:
+		methods:
+        [id(1), helpstring("Fired before a download begins. Provides information to download the file bypassing URLMON. bStopDownload, default = true.SendProgressEvents, default = true. sPathToSave = path and filename")]
+        void FileDownloadEx([in] long dlUID, [in] BSTR sURL,[in] BSTR sFilename,[in] BSTR sExt,[in] BSTR sFileSize, [in] BSTR sExtraHeaders,[in] BSTR sRedirURL,[in, out] VARIANT_BOOL *SendProgressEvents, [in,out] VARIANT_BOOL *bStopDownload, [in,out] BSTR *sPathToSave);
+
+        [id(2), helpstring("On progress")]
+        void OnFileDLProgress([in] long dlUID, [in] BSTR sURL,[in] long lProgress, [in] long lProgressMax, [in,out] VARIANT_BOOL *CancelDl);
+
+        [id(3), helpstring("On End download")]
+        void OnFileDLEndDownload([in] long dlUID, [in] BSTR sURL, [in] BSTR sSavedFilePath);
+
+        [id(4), helpstring("On Download Errors")]
+        void OnFileDLDownloadError([in] long dlUID, [in] BSTR sURL, [in] BSTR sErrorMsg);
+
+        [id(5), helpstring("Fires before a basic or NTLM authentication. Supply username and password obtained from user or cancel download.")]
+        void OnFileDLAuthenticate([in] long dlUID, [in,out] BSTR *sUsername,[in,out] BSTR *sPassword, [in,out] VARIANT_BOOL *Cancel);
+        
+		[id(6), helpstring("Potocol Handler, fired before sending request to server and BeforeNavigate2.")]
+        void ProtocolHandlerOnBeginTransaction([in] long IEServerHwnd, [in] BSTR sURL, [in] BSTR sRequestHeaders, [in,out] BSTR *sAdditionalHeaders, [in,out] VARIANT_BOOL *Cancel);
+
+        [id(7), helpstring("Potocol Handler, fired after a response have been received from server.")]
+        void ProtocolHandlerOnResponse([in] long IEServerHwnd, [in] BSTR sURL, [in] BSTR sResponseHeaders, [in] BSTR sRedirectedUrl, [in] BSTR sRedirectHeaders, [in,out] VARIANT_BOOL *Cancel);
+
+        [id(8), helpstring("Before sending request headers to server. Gives client a chance to add additional headers.")]
+        void OnFileDLBeginningTransaction([in] long dlUID, [in] BSTR sURL, [in] BSTR sRequestHeaders, [in,out] BSTR *sAdditionalRequestHeaders, [in,out] VARIANT_BOOL *bResuming, [in,out] VARIANT_BOOL *bCancel);
+
+        [id(9), helpstring("After receiving the first initial response from server")]
+        void OnFileDLResponse([in] long dlUID, [in] BSTR sURL,[in] long lResponseCode,[in] BSTR sResponseHeaders, [in,out] VARIANT_BOOL *CancelDl);
+
+	};
+
+	[
+		uuid(A1FE23EF-03EF-4759-B021-668443C37A24),
+		helpstring("csDLMan Class")
+	]
+	coclass csDLMan
+	{
+		[default] interface IcsDLMan;
+		[default, source] dispinterface _IcsDLManEvents;
+	};
+};

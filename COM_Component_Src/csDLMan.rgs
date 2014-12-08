@@ -1,0 +1,26 @@
+HKCR
+{
+	CsExWBDLMan.csDLMan.1 = s 'csDLMan Class'
+	{
+		CLSID = s '{A1FE23EF-03EF-4759-B021-668443C37A24}'
+	}
+	CsExWBDLMan.csDLMan = s 'csDLMan Class'
+	{
+		CLSID = s '{A1FE23EF-03EF-4759-B021-668443C37A24}'
+		CurVer = s 'CsExWBDLMan.csDLMan.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {A1FE23EF-03EF-4759-B021-668443C37A24} = s 'csDLMan Class'
+		{
+			ProgID = s 'CsExWBDLMan.csDLMan.1'
+			VersionIndependentProgID = s 'CsExWBDLMan.csDLMan'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			'TypeLib' = s '{8F81BC06-C252-4437-92EC-E343AFBAA03A}'
+		}
+	}
+}
