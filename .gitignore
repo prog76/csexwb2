@@ -16,3 +16,5 @@ Debug
 *.pch
 *.user
 *.exe
+*.dll
+*.ncb
