@@ -2065,7 +2065,7 @@ static LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
 		&& (wbhookdata[H_KEYBOARD].hwndTarget) 
 		&& (::IsWindow(wbhookdata[H_KEYBOARD].hwndTarget)) )
 	{
-		DWORD dwresult = 0;
+		DWORD_PTR dwresult = 0;
 		//UINT umsg = WM_KEYDOWN;
 		////wParam = virtual-key code
 		//// Reference: WM_KEYDOWN on MSDN
@@ -2112,7 +2112,7 @@ static LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 		&& (wbhookdata[H_MOUSE].hwndTarget) 
 		&& (::IsWindow(wbhookdata[H_MOUSE].hwndTarget)) )
 	{
-		DWORD dwresult = 0;
+		DWORD_PTR dwresult = 0;
 		::SendMessageTimeout(wbhookdata[H_MOUSE].hwndTarget, wbhookdata[H_MOUSE].uiHookMsgID , 
 			wParam, lParam, SMTO_ABORTIFHUNG, 500, &dwresult);
 		long lret = (long)dwresult;
@@ -2134,7 +2134,7 @@ static LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lP
 		&& (wbhookdata[H_KEYBOARD_LL].hwndTarget) 
 		&& (::IsWindow(wbhookdata[H_KEYBOARD_LL].hwndTarget)) )
 	{
-		DWORD dwresult = 0;
+		DWORD_PTR dwresult = 0;
 		
 		::SendMessageTimeout(wbhookdata[H_KEYBOARD_LL].hwndTarget, 
 			wbhookdata[H_KEYBOARD_LL].uiHookMsgID , 
@@ -2159,7 +2159,7 @@ static LRESULT CALLBACK CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 		&& (wbhookdata[H_CALLWNDPROC].hwndTarget) 
 		&& (::IsWindow(wbhookdata[H_CALLWNDPROC].hwndTarget)) )
 	{
-		DWORD dwresult = 0;
+		DWORD_PTR dwresult = 0;
 		::SendMessageTimeout(wbhookdata[H_CALLWNDPROC].hwndTarget,
 			wbhookdata[H_CALLWNDPROC].uiHookMsgID , 
 			wParam, lParam, SMTO_ABORTIFHUNG, 500, &dwresult);
@@ -2180,7 +2180,7 @@ static LRESULT CALLBACK CBTProc(int nCode, WPARAM wParam, LPARAM lParam)
 		&& (wbhookdata[H_CBT].hwndTarget) 
 		&& (::IsWindow(wbhookdata[H_CBT].hwndTarget)) )
 	{
-		DWORD dwresult = 0;
+		DWORD_PTR dwresult = 0;
 		nCode_CBTProc = nCode;
 		//nCode
 //HCBT_ACTIVATE
@@ -2216,7 +2216,7 @@ static LRESULT CALLBACK GetMsgProc(int nCode, WPARAM wParam, LPARAM lParam)
 		&& (wbhookdata[H_GETMESSAGE].hwndTarget) 
 		&& (::IsWindow(wbhookdata[H_GETMESSAGE].hwndTarget)) )
 	{
-		DWORD dwresult = 0;
+		DWORD_PTR dwresult = 0;
 		::SendMessageTimeout(wbhookdata[H_GETMESSAGE].hwndTarget,
 			wbhookdata[H_GETMESSAGE].uiHookMsgID , 
 			wParam, lParam, SMTO_ABORTIFHUNG, 500, &dwresult);
@@ -2237,7 +2237,7 @@ static LRESULT CALLBACK MessageProc(int nCode, WPARAM wParam, LPARAM lParam)
 		&& (wbhookdata[H_MSGFILTER].hwndTarget) 
 		&& (::IsWindow(wbhookdata[H_MSGFILTER].hwndTarget)) )
 	{
-		DWORD dwresult = 0;
+		DWORD_PTR dwresult = 0;
 		nCode_MessageProc = nCode;
 		//nCode
 //MSGF_DDEMGR
@@ -2264,7 +2264,7 @@ static LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lPara
 		&& (wbhookdata[H_MOUSE_LL].hwndTarget) 
 		&& (::IsWindow(wbhookdata[H_MOUSE_LL].hwndTarget)) )
 	{
-		DWORD dwresult = 0;
+		DWORD_PTR dwresult = 0;
 		//wParam, one of WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEMOVE,
 		//WM_MOUSEWHEEL, WM_RBUTTONDOWN, or WM_RBUTTONUP.
 		//LPMSLLHOOKSTRUCT msg = (LPMSLLHOOKSTRUCT)lParam
@@ -2286,7 +2286,7 @@ static LRESULT CALLBACK ForegroundIdleProc(int nCode, WPARAM wParam, LPARAM lPar
 		&& (wbhookdata[H_FOREGROUNDIDLE].hwndTarget) 
 		&& (::IsWindow(wbhookdata[H_FOREGROUNDIDLE].hwndTarget)) )
 	{
-		DWORD dwresult = 0;
+		DWORD_PTR dwresult = 0;
 		//wParam and lParam are not used
 		::SendMessageTimeout(wbhookdata[H_FOREGROUNDIDLE].hwndTarget,
 			wbhookdata[H_FOREGROUNDIDLE].uiHookMsgID , 
@@ -2306,7 +2306,7 @@ static LRESULT CALLBACK CallWndRetProc(int nCode, WPARAM wParam, LPARAM lParam)
 		&& (wbhookdata[H_CALLWNDPROCRET].hwndTarget) 
 		&& (::IsWindow(wbhookdata[H_CALLWNDPROCRET].hwndTarget)) )
 	{
-		DWORD dwresult = 0;
+		DWORD_PTR dwresult = 0;
 		//wParam, Specifies whether the message is sent by the current process.
 		//If the message is sent by the current process, it is nonzero; otherwise, it is NULL.
 		//LPCWPRETSTRUCT msg = (LPCWPRETSTRUCT)lParam;
@@ -2328,7 +2328,7 @@ static LRESULT CALLBACK SysMsgProc(int nCode, WPARAM wParam, LPARAM lParam)
 		&& (wbhookdata[H_SYSMSGFILTER].hwndTarget) 
 		&& (::IsWindow(wbhookdata[H_SYSMSGFILTER].hwndTarget)) )
 	{
-		DWORD dwresult = 0;
+		DWORD_PTR dwresult = 0;
 		nCode_SysMsgProc = nCode;
 		//nCode
 //MSGF_DIALOGBOX
@@ -2354,7 +2354,7 @@ static LRESULT CALLBACK ShellProc(int nCode, WPARAM wParam, LPARAM lParam)
 		&& (wbhookdata[H_SHELL].hwndTarget) 
 		&& (::IsWindow(wbhookdata[H_SHELL].hwndTarget)) )
 	{
-		DWORD dwresult = 0;
+		DWORD_PTR dwresult = 0;
 		nCode_ShellProc = nCode;
 		//contents of wParam and lParam depend on nCode
 		::SendMessageTimeout(wbhookdata[H_SHELL].hwndTarget,

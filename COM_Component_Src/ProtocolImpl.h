@@ -80,9 +80,9 @@ template <class T>
 struct QIPassthrough
 {
 	static HRESULT WINAPI QueryInterfacePassthroughT(void* pv, REFIID riid,
-		LPVOID* ppv, DWORD dw);
+		LPVOID* ppv, DWORD_PTR dw);
 	static HRESULT WINAPI QueryInterfaceDebugT(void* pv, REFIID riid,
-		LPVOID* ppv, DWORD dw);
+		LPVOID* ppv, DWORD_PTR dw);
 };
 
 HRESULT WINAPI QueryInterfacePassthrough(void* pv, REFIID riid,

@@ -154,7 +154,7 @@ template <class T, const IID* piid, class CDV>
 STDMETHODIMP IConnectionPointImplMT<T, piid, CDV>::Unadvise(DWORD dwCookie)
 {
 	m_CPMTCritSec.Lock();
-	DWORD dwGITCookie = (DWORD)_CDV::GetUnknown(dwCookie);
+	DWORD dwGITCookie = (DWORD)m_vec.GetUnknown(dwCookie);
 	HRESULT hRes = m_vec.Remove(dwCookie) ? S_OK : CONNECT_E_NOCONNECTION;
 	m_CPMTCritSec.Unlock();
 	if (hRes == S_OK && dwGITCookie != NULL)
@@ -202,7 +202,7 @@ STDMETHODIMP IConnectionPointImplMT<T, piid, CDV>::EnumConnections(
 			{
 				// AddRef() implicit in GetInterfaceFromGlobal():
 				pend->pUnk = pUnk;
-				pend->dwCookie = _CDV::GetCookie(reinterpret_cast<IUnknown **>(pDWCookie));
+				pend->dwCookie = m_vec.GetCookie(reinterpret_cast<IUnknown **>(pDWCookie));
 				pend++;
 			}
 		}

@@ -1,19 +1,27 @@
+
+
 /* this ALWAYS GENERATED file contains the definitions for the interfaces */
 
 
-/* File created by MIDL compiler version 5.01.0164 */
-/* at Wed Aug 22 07:24:48 2007
+ /* File created by MIDL compiler version 8.00.0603 */
+/* at Sat Dec 06 22:56:54 2014
  */
-/* Compiler settings for C:\Temp\COM_Component_Source_Binaries\csExWBDLMan.idl:
-    Oicf (OptLev=i2), W1, Zp8, env=Win32, ms_ext, c_ext
+/* Compiler settings for csExWBDLMan.idl:
+    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=AMD64 8.00.0603 
+    protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
+    VC __declspec() decoration level: 
+         __declspec(uuid()), __declspec(selectany), __declspec(novtable)
+         DECLSPEC_UUID(), MIDL_INTERFACE()
 */
-//@@MIDL_FILE_HEADING(  )
+/* @@MIDL_FILE_HEADING(  ) */
+
+#pragma warning( disable: 4049 )  /* more than 64k source lines */
 
 
 /* verify that the <rpcndr.h> version is high enough to compile this file*/
 #ifndef __REQUIRED_RPCNDR_H_VERSION__
-#define __REQUIRED_RPCNDR_H_VERSION__ 440
+#define __REQUIRED_RPCNDR_H_VERSION__ 475
 #endif
 
 #include "rpc.h"
@@ -31,27 +39,30 @@
 #ifndef __csExWBDLMan_h__
 #define __csExWBDLMan_h__
 
-#ifdef __cplusplus
-extern "C"{
-#endif 
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
+#pragma once
+#endif
 
 /* Forward Declarations */ 
 
 #ifndef __IDownloadManager_FWD_DEFINED__
 #define __IDownloadManager_FWD_DEFINED__
 typedef interface IDownloadManager IDownloadManager;
+
 #endif 	/* __IDownloadManager_FWD_DEFINED__ */
 
 
 #ifndef __IcsDLMan_FWD_DEFINED__
 #define __IcsDLMan_FWD_DEFINED__
 typedef interface IcsDLMan IcsDLMan;
+
 #endif 	/* __IcsDLMan_FWD_DEFINED__ */
 
 
 #ifndef ___IcsDLManEvents_FWD_DEFINED__
 #define ___IcsDLManEvents_FWD_DEFINED__
 typedef interface _IcsDLManEvents _IcsDLManEvents;
+
 #endif 	/* ___IcsDLManEvents_FWD_DEFINED__ */
 
 
@@ -71,8 +82,10 @@ typedef struct csDLMan csDLMan;
 #include "oaidl.h"
 #include "ocidl.h"
 
-void __RPC_FAR * __RPC_USER MIDL_user_allocate(size_t);
-void __RPC_USER MIDL_user_free( void __RPC_FAR * ); 
+#ifdef __cplusplus
+extern "C"{
+#endif 
+
 
 #ifndef __IDownloadManager_INTERFACE_DEFINED__
 #define __IDownloadManager_INTERFACE_DEFINED__
@@ -90,16 +103,17 @@ EXTERN_C const IID IID_IDownloadManager;
     {
     public:
         virtual HRESULT STDMETHODCALLTYPE Download( 
-            /* [in] */ IMoniker __RPC_FAR *pmk,
-            /* [in] */ IBindCtx __RPC_FAR *pbc,
+            /* [in] */ IMoniker *pmk,
+            /* [in] */ IBindCtx *pbc,
             /* [in] */ DWORD dwBindVerb,
             /* [in] */ LONG grfBINDF,
-            /* [in] */ BINDINFO __RPC_FAR *pBindInfo,
+            /* [in] */ BINDINFO *pBindInfo,
             /* [in] */ LPCOLESTR pszHeaders,
             /* [in] */ LPCOLESTR pszRedir,
             /* [in] */ UINT uiCP) = 0;
         
     };
+    
     
 #else 	/* C style interface */
 
@@ -107,24 +121,25 @@ EXTERN_C const IID IID_IDownloadManager;
     {
         BEGIN_INTERFACE
         
-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *QueryInterface )( 
-            IDownloadManager __RPC_FAR * This,
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IDownloadManager * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
         
-        ULONG ( STDMETHODCALLTYPE __RPC_FAR *AddRef )( 
-            IDownloadManager __RPC_FAR * This);
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IDownloadManager * This);
         
-        ULONG ( STDMETHODCALLTYPE __RPC_FAR *Release )( 
-            IDownloadManager __RPC_FAR * This);
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IDownloadManager * This);
         
-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *Download )( 
-            IDownloadManager __RPC_FAR * This,
-            /* [in] */ IMoniker __RPC_FAR *pmk,
-            /* [in] */ IBindCtx __RPC_FAR *pbc,
+        HRESULT ( STDMETHODCALLTYPE *Download )( 
+            IDownloadManager * This,
+            /* [in] */ IMoniker *pmk,
+            /* [in] */ IBindCtx *pbc,
             /* [in] */ DWORD dwBindVerb,
             /* [in] */ LONG grfBINDF,
-            /* [in] */ BINDINFO __RPC_FAR *pBindInfo,
+            /* [in] */ BINDINFO *pBindInfo,
             /* [in] */ LPCOLESTR pszHeaders,
             /* [in] */ LPCOLESTR pszRedir,
             /* [in] */ UINT uiCP);
@@ -134,7 +149,7 @@ EXTERN_C const IID IID_IDownloadManager;
 
     interface IDownloadManager
     {
-        CONST_VTBL struct IDownloadManagerVtbl __RPC_FAR *lpVtbl;
+        CONST_VTBL struct IDownloadManagerVtbl *lpVtbl;
     };
 
     
@@ -143,17 +158,17 @@ EXTERN_C const IID IID_IDownloadManager;
 
 
 #define IDownloadManager_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
 
 #define IDownloadManager_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
+    ( (This)->lpVtbl -> AddRef(This) ) 
 
 #define IDownloadManager_Release(This)	\
-    (This)->lpVtbl -> Release(This)
+    ( (This)->lpVtbl -> Release(This) ) 
 
 
 #define IDownloadManager_Download(This,pmk,pbc,dwBindVerb,grfBINDF,pBindInfo,pszHeaders,pszRedir,uiCP)	\
-    (This)->lpVtbl -> Download(This,pmk,pbc,dwBindVerb,grfBINDF,pBindInfo,pszHeaders,pszRedir,uiCP)
+    ( (This)->lpVtbl -> Download(This,pmk,pbc,dwBindVerb,grfBINDF,pBindInfo,pszHeaders,pszRedir,uiCP) ) 
 
 #endif /* COBJMACROS */
 
@@ -162,52 +177,34 @@ EXTERN_C const IID IID_IDownloadManager;
 
 
 
-HRESULT STDMETHODCALLTYPE IDownloadManager_Download_Proxy( 
-    IDownloadManager __RPC_FAR * This,
-    /* [in] */ IMoniker __RPC_FAR *pmk,
-    /* [in] */ IBindCtx __RPC_FAR *pbc,
-    /* [in] */ DWORD dwBindVerb,
-    /* [in] */ LONG grfBINDF,
-    /* [in] */ BINDINFO __RPC_FAR *pBindInfo,
-    /* [in] */ LPCOLESTR pszHeaders,
-    /* [in] */ LPCOLESTR pszRedir,
-    /* [in] */ UINT uiCP);
-
-
-void __RPC_STUB IDownloadManager_Download_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
 
 #endif 	/* __IDownloadManager_INTERFACE_DEFINED__ */
 
 
-/* interface __MIDL_itf_csExWBDLMan_0258 */
+/* interface __MIDL_itf_csExWBDLMan_0000_0001 */
 /* [local] */ 
 
 typedef 
 enum WINDOWSHOOK_TYPES
-    {	WHT_CALLWNDPROC	= 0,
-	WHT_CBT	= 1,
-	WHT_GETMESSAGE	= 2,
-	WHT_KEYBOARD	= 3,
-	WHT_MOUSE	= 4,
-	WHT_MSGFILTER	= 5,
-	WHT_KEYBOARD_LL	= 6,
-	WHT_MOUSE_LL	= 7,
-	WHT_FOREGROUNDIDLE	= 8,
-	WHT_CALLWNDPROCRET	= 9,
-	WHT_SYSMSGFILTER	= 10,
-	WHT_SHELL	= 11
-    }	WINDOWSHOOK_TYPES;
+    {
+        WHT_CALLWNDPROC	= 0,
+        WHT_CBT	= 1,
+        WHT_GETMESSAGE	= 2,
+        WHT_KEYBOARD	= 3,
+        WHT_MOUSE	= 4,
+        WHT_MSGFILTER	= 5,
+        WHT_KEYBOARD_LL	= 6,
+        WHT_MOUSE_LL	= 7,
+        WHT_FOREGROUNDIDLE	= 8,
+        WHT_CALLWNDPROCRET	= 9,
+        WHT_SYSMSGFILTER	= 10,
+        WHT_SHELL	= 11
+    } 	WINDOWSHOOK_TYPES;
 
 
 
-extern RPC_IF_HANDLE __MIDL_itf_csExWBDLMan_0258_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_csExWBDLMan_0258_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_csExWBDLMan_0000_0001_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_csExWBDLMan_0000_0001_v0_0_s_ifspec;
 
 #ifndef __IcsDLMan_INTERFACE_DEFINED__
 #define __IcsDLMan_INTERFACE_DEFINED__
@@ -226,22 +223,22 @@ EXTERN_C const IID IID_IcsDLMan;
     public:
         virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE DownloadUrlAsync( 
             /* [in] */ BSTR URL,
-            /* [out][in] */ long __RPC_FAR *DLUID) = 0;
+            /* [out][in] */ long *DLUID) = 0;
         
         virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_HWNDInternetExplorerServer( 
-            /* [retval][out] */ long __RPC_FAR *pVal) = 0;
+            /* [retval][out] */ long *pVal) = 0;
         
         virtual /* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE put_HWNDInternetExplorerServer( 
             /* [in] */ long newVal) = 0;
         
         virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_HTTPSprotocol( 
-            /* [retval][out] */ VARIANT_BOOL __RPC_FAR *pVal) = 0;
+            /* [retval][out] */ VARIANT_BOOL *pVal) = 0;
         
         virtual /* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE put_HTTPSprotocol( 
             /* [in] */ VARIANT_BOOL newVal) = 0;
         
         virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_HTTPprotocol( 
-            /* [retval][out] */ VARIANT_BOOL __RPC_FAR *pVal) = 0;
+            /* [retval][out] */ VARIANT_BOOL *pVal) = 0;
         
         virtual /* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE put_HTTPprotocol( 
             /* [in] */ VARIANT_BOOL newVal) = 0;
@@ -253,13 +250,14 @@ EXTERN_C const IID IID_IcsDLMan;
             /* [in] */ WINDOWSHOOK_TYPES lHookType,
             /* [in] */ long hwndTargetWnd,
             /* [in] */ VARIANT_BOOL bStart,
-            /* [out][in] */ long __RPC_FAR *lUWMHookMsgID) = 0;
+            /* [out][in] */ long *lUWMHookMsgID) = 0;
         
         virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE HookProcNCode( 
             /* [in] */ WINDOWSHOOK_TYPES lHookType,
-            /* [out][in] */ long __RPC_FAR *nCode) = 0;
+            /* [out][in] */ long *nCode) = 0;
         
     };
+    
     
 #else 	/* C style interface */
 
@@ -267,97 +265,106 @@ EXTERN_C const IID IID_IcsDLMan;
     {
         BEGIN_INTERFACE
         
-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *QueryInterface )( 
-            IcsDLMan __RPC_FAR * This,
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IcsDLMan * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
         
-        ULONG ( STDMETHODCALLTYPE __RPC_FAR *AddRef )( 
-            IcsDLMan __RPC_FAR * This);
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IcsDLMan * This);
         
-        ULONG ( STDMETHODCALLTYPE __RPC_FAR *Release )( 
-            IcsDLMan __RPC_FAR * This);
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IcsDLMan * This);
         
-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetTypeInfoCount )( 
-            IcsDLMan __RPC_FAR * This,
-            /* [out] */ UINT __RPC_FAR *pctinfo);
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+            IcsDLMan * This,
+            /* [out] */ UINT *pctinfo);
         
-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetTypeInfo )( 
-            IcsDLMan __RPC_FAR * This,
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+            IcsDLMan * This,
             /* [in] */ UINT iTInfo,
             /* [in] */ LCID lcid,
-            /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *ppTInfo);
+            /* [out] */ ITypeInfo **ppTInfo);
         
-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetIDsOfNames )( 
-            IcsDLMan __RPC_FAR * This,
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+            IcsDLMan * This,
             /* [in] */ REFIID riid,
-            /* [size_is][in] */ LPOLESTR __RPC_FAR *rgszNames,
-            /* [in] */ UINT cNames,
+            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [range][in] */ UINT cNames,
             /* [in] */ LCID lcid,
-            /* [size_is][out] */ DISPID __RPC_FAR *rgDispId);
+            /* [size_is][out] */ DISPID *rgDispId);
         
-        /* [local] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *Invoke )( 
-            IcsDLMan __RPC_FAR * This,
-            /* [in] */ DISPID dispIdMember,
-            /* [in] */ REFIID riid,
-            /* [in] */ LCID lcid,
-            /* [in] */ WORD wFlags,
-            /* [out][in] */ DISPPARAMS __RPC_FAR *pDispParams,
-            /* [out] */ VARIANT __RPC_FAR *pVarResult,
-            /* [out] */ EXCEPINFO __RPC_FAR *pExcepInfo,
-            /* [out] */ UINT __RPC_FAR *puArgErr);
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+            IcsDLMan * This,
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
         
-        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *DownloadUrlAsync )( 
-            IcsDLMan __RPC_FAR * This,
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *DownloadUrlAsync )( 
+            IcsDLMan * This,
             /* [in] */ BSTR URL,
-            /* [out][in] */ long __RPC_FAR *DLUID);
+            /* [out][in] */ long *DLUID);
         
-        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *get_HWNDInternetExplorerServer )( 
-            IcsDLMan __RPC_FAR * This,
-            /* [retval][out] */ long __RPC_FAR *pVal);
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_HWNDInternetExplorerServer )( 
+            IcsDLMan * This,
+            /* [retval][out] */ long *pVal);
         
-        /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *put_HWNDInternetExplorerServer )( 
-            IcsDLMan __RPC_FAR * This,
+        /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE *put_HWNDInternetExplorerServer )( 
+            IcsDLMan * This,
             /* [in] */ long newVal);
         
-        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *get_HTTPSprotocol )( 
-            IcsDLMan __RPC_FAR * This,
-            /* [retval][out] */ VARIANT_BOOL __RPC_FAR *pVal);
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_HTTPSprotocol )( 
+            IcsDLMan * This,
+            /* [retval][out] */ VARIANT_BOOL *pVal);
         
-        /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *put_HTTPSprotocol )( 
-            IcsDLMan __RPC_FAR * This,
+        /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE *put_HTTPSprotocol )( 
+            IcsDLMan * This,
             /* [in] */ VARIANT_BOOL newVal);
         
-        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *get_HTTPprotocol )( 
-            IcsDLMan __RPC_FAR * This,
-            /* [retval][out] */ VARIANT_BOOL __RPC_FAR *pVal);
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_HTTPprotocol )( 
+            IcsDLMan * This,
+            /* [retval][out] */ VARIANT_BOOL *pVal);
         
-        /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *put_HTTPprotocol )( 
-            IcsDLMan __RPC_FAR * This,
+        /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE *put_HTTPprotocol )( 
+            IcsDLMan * This,
             /* [in] */ VARIANT_BOOL newVal);
         
-        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *CancelFileDownload )( 
-            IcsDLMan __RPC_FAR * This,
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *CancelFileDownload )( 
+            IcsDLMan * This,
             /* [in] */ long DlUid);
         
-        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *SetupWindowsHook )( 
-            IcsDLMan __RPC_FAR * This,
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *SetupWindowsHook )( 
+            IcsDLMan * This,
             /* [in] */ WINDOWSHOOK_TYPES lHookType,
             /* [in] */ long hwndTargetWnd,
             /* [in] */ VARIANT_BOOL bStart,
-            /* [out][in] */ long __RPC_FAR *lUWMHookMsgID);
+            /* [out][in] */ long *lUWMHookMsgID);
         
-        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *HookProcNCode )( 
-            IcsDLMan __RPC_FAR * This,
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *HookProcNCode )( 
+            IcsDLMan * This,
             /* [in] */ WINDOWSHOOK_TYPES lHookType,
-            /* [out][in] */ long __RPC_FAR *nCode);
+            /* [out][in] */ long *nCode);
         
         END_INTERFACE
     } IcsDLManVtbl;
 
     interface IcsDLMan
     {
-        CONST_VTBL struct IcsDLManVtbl __RPC_FAR *lpVtbl;
+        CONST_VTBL struct IcsDLManVtbl *lpVtbl;
     };
 
     
@@ -366,188 +373,63 @@ EXTERN_C const IID IID_IcsDLMan;
 
 
 #define IcsDLMan_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
 
 #define IcsDLMan_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
+    ( (This)->lpVtbl -> AddRef(This) ) 
 
 #define IcsDLMan_Release(This)	\
-    (This)->lpVtbl -> Release(This)
+    ( (This)->lpVtbl -> Release(This) ) 
 
 
 #define IcsDLMan_GetTypeInfoCount(This,pctinfo)	\
-    (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo)
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
 
 #define IcsDLMan_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
-    (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo)
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
 
 #define IcsDLMan_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
-    (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
 
 #define IcsDLMan_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
-    (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
 
 
 #define IcsDLMan_DownloadUrlAsync(This,URL,DLUID)	\
-    (This)->lpVtbl -> DownloadUrlAsync(This,URL,DLUID)
+    ( (This)->lpVtbl -> DownloadUrlAsync(This,URL,DLUID) ) 
 
 #define IcsDLMan_get_HWNDInternetExplorerServer(This,pVal)	\
-    (This)->lpVtbl -> get_HWNDInternetExplorerServer(This,pVal)
+    ( (This)->lpVtbl -> get_HWNDInternetExplorerServer(This,pVal) ) 
 
 #define IcsDLMan_put_HWNDInternetExplorerServer(This,newVal)	\
-    (This)->lpVtbl -> put_HWNDInternetExplorerServer(This,newVal)
+    ( (This)->lpVtbl -> put_HWNDInternetExplorerServer(This,newVal) ) 
 
 #define IcsDLMan_get_HTTPSprotocol(This,pVal)	\
-    (This)->lpVtbl -> get_HTTPSprotocol(This,pVal)
+    ( (This)->lpVtbl -> get_HTTPSprotocol(This,pVal) ) 
 
 #define IcsDLMan_put_HTTPSprotocol(This,newVal)	\
-    (This)->lpVtbl -> put_HTTPSprotocol(This,newVal)
+    ( (This)->lpVtbl -> put_HTTPSprotocol(This,newVal) ) 
 
 #define IcsDLMan_get_HTTPprotocol(This,pVal)	\
-    (This)->lpVtbl -> get_HTTPprotocol(This,pVal)
+    ( (This)->lpVtbl -> get_HTTPprotocol(This,pVal) ) 
 
 #define IcsDLMan_put_HTTPprotocol(This,newVal)	\
-    (This)->lpVtbl -> put_HTTPprotocol(This,newVal)
+    ( (This)->lpVtbl -> put_HTTPprotocol(This,newVal) ) 
 
 #define IcsDLMan_CancelFileDownload(This,DlUid)	\
-    (This)->lpVtbl -> CancelFileDownload(This,DlUid)
+    ( (This)->lpVtbl -> CancelFileDownload(This,DlUid) ) 
 
 #define IcsDLMan_SetupWindowsHook(This,lHookType,hwndTargetWnd,bStart,lUWMHookMsgID)	\
-    (This)->lpVtbl -> SetupWindowsHook(This,lHookType,hwndTargetWnd,bStart,lUWMHookMsgID)
+    ( (This)->lpVtbl -> SetupWindowsHook(This,lHookType,hwndTargetWnd,bStart,lUWMHookMsgID) ) 
 
 #define IcsDLMan_HookProcNCode(This,lHookType,nCode)	\
-    (This)->lpVtbl -> HookProcNCode(This,lHookType,nCode)
+    ( (This)->lpVtbl -> HookProcNCode(This,lHookType,nCode) ) 
 
 #endif /* COBJMACROS */
 
 
 #endif 	/* C style interface */
 
-
-
-/* [helpstring][id] */ HRESULT STDMETHODCALLTYPE IcsDLMan_DownloadUrlAsync_Proxy( 
-    IcsDLMan __RPC_FAR * This,
-    /* [in] */ BSTR URL,
-    /* [out][in] */ long __RPC_FAR *DLUID);
-
-
-void __RPC_STUB IcsDLMan_DownloadUrlAsync_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-/* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE IcsDLMan_get_HWNDInternetExplorerServer_Proxy( 
-    IcsDLMan __RPC_FAR * This,
-    /* [retval][out] */ long __RPC_FAR *pVal);
-
-
-void __RPC_STUB IcsDLMan_get_HWNDInternetExplorerServer_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-/* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE IcsDLMan_put_HWNDInternetExplorerServer_Proxy( 
-    IcsDLMan __RPC_FAR * This,
-    /* [in] */ long newVal);
-
-
-void __RPC_STUB IcsDLMan_put_HWNDInternetExplorerServer_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-/* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE IcsDLMan_get_HTTPSprotocol_Proxy( 
-    IcsDLMan __RPC_FAR * This,
-    /* [retval][out] */ VARIANT_BOOL __RPC_FAR *pVal);
-
-
-void __RPC_STUB IcsDLMan_get_HTTPSprotocol_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-/* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE IcsDLMan_put_HTTPSprotocol_Proxy( 
-    IcsDLMan __RPC_FAR * This,
-    /* [in] */ VARIANT_BOOL newVal);
-
-
-void __RPC_STUB IcsDLMan_put_HTTPSprotocol_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-/* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE IcsDLMan_get_HTTPprotocol_Proxy( 
-    IcsDLMan __RPC_FAR * This,
-    /* [retval][out] */ VARIANT_BOOL __RPC_FAR *pVal);
-
-
-void __RPC_STUB IcsDLMan_get_HTTPprotocol_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-/* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE IcsDLMan_put_HTTPprotocol_Proxy( 
-    IcsDLMan __RPC_FAR * This,
-    /* [in] */ VARIANT_BOOL newVal);
-
-
-void __RPC_STUB IcsDLMan_put_HTTPprotocol_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-/* [helpstring][id] */ HRESULT STDMETHODCALLTYPE IcsDLMan_CancelFileDownload_Proxy( 
-    IcsDLMan __RPC_FAR * This,
-    /* [in] */ long DlUid);
-
-
-void __RPC_STUB IcsDLMan_CancelFileDownload_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-/* [helpstring][id] */ HRESULT STDMETHODCALLTYPE IcsDLMan_SetupWindowsHook_Proxy( 
-    IcsDLMan __RPC_FAR * This,
-    /* [in] */ WINDOWSHOOK_TYPES lHookType,
-    /* [in] */ long hwndTargetWnd,
-    /* [in] */ VARIANT_BOOL bStart,
-    /* [out][in] */ long __RPC_FAR *lUWMHookMsgID);
-
-
-void __RPC_STUB IcsDLMan_SetupWindowsHook_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
-
-
-/* [helpstring][id] */ HRESULT STDMETHODCALLTYPE IcsDLMan_HookProcNCode_Proxy( 
-    IcsDLMan __RPC_FAR * This,
-    /* [in] */ WINDOWSHOOK_TYPES lHookType,
-    /* [out][in] */ long __RPC_FAR *nCode);
-
-
-void __RPC_STUB IcsDLMan_HookProcNCode_Stub(
-    IRpcStubBuffer *This,
-    IRpcChannelBuffer *_pRpcChannelBuffer,
-    PRPC_MESSAGE _pRpcMessage,
-    DWORD *_pdwStubPhase);
 
 
 
@@ -586,52 +468,61 @@ EXTERN_C const IID DIID__IcsDLManEvents;
     {
         BEGIN_INTERFACE
         
-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *QueryInterface )( 
-            _IcsDLManEvents __RPC_FAR * This,
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            _IcsDLManEvents * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
         
-        ULONG ( STDMETHODCALLTYPE __RPC_FAR *AddRef )( 
-            _IcsDLManEvents __RPC_FAR * This);
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            _IcsDLManEvents * This);
         
-        ULONG ( STDMETHODCALLTYPE __RPC_FAR *Release )( 
-            _IcsDLManEvents __RPC_FAR * This);
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            _IcsDLManEvents * This);
         
-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetTypeInfoCount )( 
-            _IcsDLManEvents __RPC_FAR * This,
-            /* [out] */ UINT __RPC_FAR *pctinfo);
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+            _IcsDLManEvents * This,
+            /* [out] */ UINT *pctinfo);
         
-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetTypeInfo )( 
-            _IcsDLManEvents __RPC_FAR * This,
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+            _IcsDLManEvents * This,
             /* [in] */ UINT iTInfo,
             /* [in] */ LCID lcid,
-            /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *ppTInfo);
+            /* [out] */ ITypeInfo **ppTInfo);
         
-        HRESULT ( STDMETHODCALLTYPE __RPC_FAR *GetIDsOfNames )( 
-            _IcsDLManEvents __RPC_FAR * This,
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+            _IcsDLManEvents * This,
             /* [in] */ REFIID riid,
-            /* [size_is][in] */ LPOLESTR __RPC_FAR *rgszNames,
-            /* [in] */ UINT cNames,
+            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [range][in] */ UINT cNames,
             /* [in] */ LCID lcid,
-            /* [size_is][out] */ DISPID __RPC_FAR *rgDispId);
+            /* [size_is][out] */ DISPID *rgDispId);
         
-        /* [local] */ HRESULT ( STDMETHODCALLTYPE __RPC_FAR *Invoke )( 
-            _IcsDLManEvents __RPC_FAR * This,
-            /* [in] */ DISPID dispIdMember,
-            /* [in] */ REFIID riid,
-            /* [in] */ LCID lcid,
-            /* [in] */ WORD wFlags,
-            /* [out][in] */ DISPPARAMS __RPC_FAR *pDispParams,
-            /* [out] */ VARIANT __RPC_FAR *pVarResult,
-            /* [out] */ EXCEPINFO __RPC_FAR *pExcepInfo,
-            /* [out] */ UINT __RPC_FAR *puArgErr);
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+            _IcsDLManEvents * This,
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
         
         END_INTERFACE
     } _IcsDLManEventsVtbl;
 
     interface _IcsDLManEvents
     {
-        CONST_VTBL struct _IcsDLManEventsVtbl __RPC_FAR *lpVtbl;
+        CONST_VTBL struct _IcsDLManEventsVtbl *lpVtbl;
     };
 
     
@@ -640,26 +531,26 @@ EXTERN_C const IID DIID__IcsDLManEvents;
 
 
 #define _IcsDLManEvents_QueryInterface(This,riid,ppvObject)	\
-    (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
 
 #define _IcsDLManEvents_AddRef(This)	\
-    (This)->lpVtbl -> AddRef(This)
+    ( (This)->lpVtbl -> AddRef(This) ) 
 
 #define _IcsDLManEvents_Release(This)	\
-    (This)->lpVtbl -> Release(This)
+    ( (This)->lpVtbl -> Release(This) ) 
 
 
 #define _IcsDLManEvents_GetTypeInfoCount(This,pctinfo)	\
-    (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo)
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
 
 #define _IcsDLManEvents_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
-    (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo)
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
 
 #define _IcsDLManEvents_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
-    (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
 
 #define _IcsDLManEvents_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
-    (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
 
 #endif /* COBJMACROS */
 
@@ -681,10 +572,10 @@ csDLMan;
 
 /* Additional Prototypes for ALL interfaces */
 
-unsigned long             __RPC_USER  BSTR_UserSize(     unsigned long __RPC_FAR *, unsigned long            , BSTR __RPC_FAR * ); 
-unsigned char __RPC_FAR * __RPC_USER  BSTR_UserMarshal(  unsigned long __RPC_FAR *, unsigned char __RPC_FAR *, BSTR __RPC_FAR * ); 
-unsigned char __RPC_FAR * __RPC_USER  BSTR_UserUnmarshal(unsigned long __RPC_FAR *, unsigned char __RPC_FAR *, BSTR __RPC_FAR * ); 
-void                      __RPC_USER  BSTR_UserFree(     unsigned long __RPC_FAR *, BSTR __RPC_FAR * ); 
+unsigned long             __RPC_USER  BSTR_UserSize(     unsigned long *, unsigned long            , BSTR * ); 
+unsigned char * __RPC_USER  BSTR_UserMarshal(  unsigned long *, unsigned char *, BSTR * ); 
+unsigned char * __RPC_USER  BSTR_UserUnmarshal(unsigned long *, unsigned char *, BSTR * ); 
+void                      __RPC_USER  BSTR_UserFree(     unsigned long *, BSTR * ); 
 
 /* end of Additional Prototypes */
 
@@ -693,3 +584,5 @@ void                      __RPC_USER  BSTR_UserFree(     unsigned long __RPC_FAR
 #endif
 
 #endif
+
+

@@ -17,7 +17,7 @@ namespace Detail
 
 template <class T>
 inline HRESULT WINAPI QIPassthrough<T>::
-	QueryInterfacePassthroughT(void* pv, REFIID riid, LPVOID* ppv, DWORD dw)
+	QueryInterfacePassthroughT(void* pv, REFIID riid, LPVOID* ppv, DWORD_PTR dw)
 {
 	ATLASSERT(pv != 0);
 	T* pT = static_cast<T*>(pv);
@@ -39,7 +39,7 @@ inline HRESULT WINAPI QIPassthrough<T>::
 
 template <class T>
 inline HRESULT WINAPI QIPassthrough<T>::
-	QueryInterfaceDebugT(void* pv, REFIID riid, LPVOID* ppv, DWORD dw)
+	QueryInterfaceDebugT(void* pv, REFIID riid, LPVOID* ppv, DWORD_PTR dw)
 {
 	ATLASSERT(pv != 0);
 	T* pT = static_cast<T*>(pv);
