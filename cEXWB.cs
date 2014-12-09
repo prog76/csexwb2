@@ -778,8 +778,9 @@ namespace csExWB
 
         protected override void Dispose(bool disposing)
         {
-            if( (disposing) && (!this.DesignMode) )
+            if( (disposing) && (!this.DesignMode) && (!disposed))
             {
+                disposed = true;
                 if (m_HookHandled != IntPtr.Zero)
                     Marshal.FreeHGlobal(m_HookHandled);
                 if (m_WBThumbImg != null)
@@ -5985,6 +5986,7 @@ namespace csExWB
 
     public event HTMLEditHostSnapRectEventHandler HTMLEditHostSnapRect = null;
     private HTMLEditHostSnapRectEventArgs HTMLEditHostSnapRectEvent = new HTMLEditHostSnapRectEventArgs();
+    private bool disposed;
 
     int IHTMLEditHost.SnapRect(IHTMLElement pIElement, ref tagRECT prcNew, int eHandle)
     {
